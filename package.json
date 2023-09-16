@@ -8,6 +8,8 @@
     "start": "nodemon index.ts",
     "start:prod": "node index.js",
     "prisma:update": "prisma migrate dev",
+    "lint": "eslint \"**/*.ts\" --fix",
+    "prettier": "npx prettier \"**/*.ts\" --write",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Dmytro Bielousov demetrxx@gmail.com",
@@ -36,6 +38,6 @@
     "typescript": "*"
   },
   "lint-staged": {
-    "**/*.ts": "eslint --fix prettier --write --ignore-unknown"
+    "**/*.ts": ["eslint --fix", "prettier --write --ignore-unknown"]
   }
 }
