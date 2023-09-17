@@ -9,6 +9,11 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
+    "globals": {
+        "Config": true
+    },
     "rules": {
+        "@typescript-eslint/no-floating-promises": "off",
+        "@typescript-eslint/strict-boolean-expressions": "off"
     }
 }

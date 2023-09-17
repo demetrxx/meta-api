@@ -1,0 +1,1 @@
+export { prismaPlugin } from './prisma';

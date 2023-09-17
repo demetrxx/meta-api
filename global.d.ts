@@ -1,0 +1,1 @@
+type Env = 'development' | 'production';
