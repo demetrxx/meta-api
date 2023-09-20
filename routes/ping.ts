@@ -25,7 +25,7 @@ const schema: FastifySchema = {
 
 export async function ping(fastify: FastifyInstance): Promise<void> {
   fastify.post('/ping', { schema }, async (req, res) => {
-    console.log(body);
+    console.log(req.body);
     res.status(200).send(JSON.stringify(req.user));
   });
 }

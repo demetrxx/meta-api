@@ -1,13 +1,12 @@
 import { buildServer } from './main';
-import { configMap } from './config';
-const env = (process.env.NODE_ENV ?? 'development') as Env;
+import { configMap, envSchema } from './config';
 
 (async () => {
-  const config = configMap[env];
-  const fastify = buildServer(config);
+  const config = configMap[envSchema.NODE_ENV];
+  const fastify = buildServer(config, envSchema);
 
   try {
-    await fastify.listen({ port: Number(process.env.PORT) });
+    await fastify.listen({ port: envSchema.PORT });
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

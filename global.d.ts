@@ -1,1 +1,1 @@
-type Env = 'development' | 'production';
+type EnvMode = 'production' | 'development';

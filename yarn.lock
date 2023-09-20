@@ -733,6 +733,16 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
+dotenv-expand@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv-expand/-/dotenv-expand-9.0.0.tgz#1fd37e2cd63ea0b5f7389fb87256efc38b035b26"
+  integrity sha512-uW8Hrhp5ammm9x7kBLR6jDfujgaDarNA02tprvZdyrJ7MpdzD1KyrIHG4l+YoC2fJ2UcdFdNWNWIjt+sexBHJw==
+
+dotenv@^16.0.0:
+  version "16.3.1"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.3.1.tgz#369034de7d7e5b120972693352a3bf112172cc3e"
+  integrity sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==
+
 eastasianwidth@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/eastasianwidth/-/eastasianwidth-0.2.0.tgz#696ce2ec0aa0e6ea93a397ffcf24aa7840c827cb"
@@ -756,6 +766,15 @@ end-of-stream@^1.1.0:
   integrity sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==
   dependencies:
     once "^1.4.0"
+
+env-schema@^5.2.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/env-schema/-/env-schema-5.2.0.tgz#9d3b3137daad07ecb5b13e95b1c8bc8dafbc6c03"
+  integrity sha512-36/6cZ+zIbcPA2ANrzp7vTz2bS8/zdZaq2RPFqJVtCGJ4P55EakgJ1BeKP8RMvEmM7ndrnHdJXzL3J1dHrEm1w==
+  dependencies:
+    ajv "^8.0.0"
+    dotenv "^16.0.0"
+    dotenv-expand "^9.0.0"
 
 es-abstract@^1.22.1:
   version "1.22.2"
