@@ -8,28 +8,22 @@ const fastify_1 = __importDefault(require("fastify"));
 const routes_1 = require("./routes");
 const plugins_1 = require("./plugins");
 const jwt_1 = __importDefault(require("@fastify/jwt"));
-function buildServer(config) {
-    const fastify = (0, fastify_1.default)({
+function buildServer(config, envSchema) {
+    const app = (0, fastify_1.default)({
         logger: config.logger,
     });
-    fastify.register(plugins_1.prismaPlugin);
-    fastify.register(jwt_1.default, { secret: 'superkey' });
-    fastify.register(async function authenticatedContext(childServer) {
-        childServer.addHook('onRequest', async (request, reply) => {
-            try {
-                await request.jwtVerify();
-            }
-            catch (err) {
-                reply.send(err);
-            }
-        });
-        childServer.register(routes_1.ping);
-        childServer.register(routes_1.routes);
+    app.register(plugins_1.validatorPlugin);
+    app.register(plugins_1.prismaPlugin);
+    app.register(jwt_1.default, { secret: envSchema.JWT_SECRET });
+    app.register(async function authContext(authServer) {
+        authServer.register(plugins_1.jwtPlugin);
+        authServer.register(routes_1.ping);
+        authServer.register(routes_1.routes);
     });
-    fastify.register(async function publicContext(childServer) {
-        childServer.register(routes_1.auth);
-        childServer.decorateRequest('foo', 'foo');
+    app.register(async function publicContext(publicServer) {
+        publicServer.register(routes_1.auth);
+        publicServer.decorateRequest('foo', 'foo');
     });
-    return fastify;
+    return app;
 }
 exports.buildServer = buildServer;

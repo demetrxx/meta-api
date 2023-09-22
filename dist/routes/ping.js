@@ -27,7 +27,7 @@ const schema = {
 };
 async function ping(fastify) {
     fastify.post('/ping', { schema }, async (req, res) => {
-        console.log(body);
+        console.log(req.body);
         res.status(200).send(JSON.stringify(req.user));
     });
 }
