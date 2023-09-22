@@ -12,7 +12,6 @@ const body = Type.Strict(
 
 const response = {
   200: Type.Object({}),
-  401: Type.Object({}),
 };
 
 const schema: FastifySchema = { body, response };
@@ -27,13 +26,13 @@ export async function login(fastify: FastifyInstance): Promise<void> {
     const user = await fastify.prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      throw new errors.Unauthorized();
+      throw new errors.Unauthorized('Invalid email.');
     }
 
     const isPasswordValid = await validatePassword(password, user.password);
 
     if (!isPasswordValid) {
-      throw new errors.Unauthorized();
+      throw new errors.Unauthorized('Invalid password.');
     }
 
     return user;
