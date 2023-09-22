@@ -2,9 +2,9 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import { routes, ping, auth } from './routes';
 import { prismaPlugin, jwtPlugin, validatorPlugin } from './plugins';
-import { type Config, type IEnvSchema } from './config';
-import { login } from './routes/auth/login';
-import { register } from './routes/auth/register';
+import { type Config, type IEnvSchema } from '../config';
+import { login } from '@/routes/auth/login';
+import { register } from '@/routes/auth/register';
 
 export function buildServer(config: Config, envSchema: IEnvSchema): FastifyInstance {
   const app = Fastify({

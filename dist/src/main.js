@@ -7,8 +7,8 @@ exports.buildServer = void 0;
 const fastify_1 = __importDefault(require("fastify"));
 const routes_1 = require("./routes");
 const plugins_1 = require("./plugins");
-const login_1 = require("./routes/auth/login");
-const register_1 = require("./routes/auth/register");
+const login_1 = require("@/routes/auth/login");
+const register_1 = require("@/routes/auth/register");
 function buildServer(config, envSchema) {
     const app = (0, fastify_1.default)({
         logger: config.logger,

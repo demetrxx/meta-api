@@ -1,4 +1,4 @@
-import { buildServer } from './main';
+import { buildServer } from './src/main';
 import { configMap, envSchema } from './config';
 
 (async () => {

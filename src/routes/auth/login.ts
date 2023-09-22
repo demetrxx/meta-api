@@ -1,5 +1,7 @@
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
 import { Type, type Static } from '@sinclair/typebox';
+import errors from 'http-errors';
+import { validatePassword } from '../../lib';
 
 const body = Type.Strict(
   Type.Object({
@@ -8,12 +10,12 @@ const body = Type.Strict(
   }),
 );
 
-// const response = Type.Object({
-//   200: Type.Any(),
-//   401: Type.Object({}),
-// });
+const response = {
+  200: Type.Object({}),
+  401: Type.Object({}),
+};
 
-const schema: FastifySchema = { body };
+const schema: FastifySchema = { body, response };
 
 interface T extends RouteGenericInterface {
   Body: Static<typeof body>;
@@ -21,20 +23,18 @@ interface T extends RouteGenericInterface {
 
 export async function login(fastify: FastifyInstance): Promise<void> {
   fastify.post<T>('/login', { schema }, async (req, res) => {
-    const { email } = req.body;
+    const { email, password } = req.body;
     const user = await fastify.prisma.user.findUnique({ where: { email } });
 
     if (!user) {
-      res.status(401);
-      throw new Error('unauthorized');
+      throw new errors.Unauthorized();
     }
 
-    // TODO: validate password
+    const isPasswordValid = await validatePassword(password, user.password);
 
-    // if (false) {
-    //   res.status(401).send();
-    //   return;
-    // }
+    if (!isPasswordValid) {
+      throw new errors.Unauthorized();
+    }
 
     return user;
   });

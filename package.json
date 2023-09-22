@@ -7,9 +7,9 @@
   "main": "server.js",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "start": "nodemon server.ts",
+    "start": "nodemon -r tsconfig-paths/register server.ts",
     "start:prod": "NODE_ENV=production node ./dist/server.js",
-    "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate": "src/prisma migrate dev",
     "lint": "eslint \"**/*.ts\" --fix",
     "prettier": "npx prettier \"**/*.ts\" --write",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
+    "@types/http-errors": "^2.0.2",
     "@types/node": "^20.6.2",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "eslint": "^8.0.1",
@@ -42,6 +43,7 @@
     "prettier": "3.0.3",
     "prisma": "^5.3.1",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "5.2.2"
   },
   "lint-staged": {
