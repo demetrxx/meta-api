@@ -1,7 +1,7 @@
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
 import { Type, type Static } from '@sinclair/typebox';
 import errors from 'http-errors';
-import { validatePassword } from '../../lib';
+import { validatePassword } from '@/lib';
 
 const body = Type.Strict(
   Type.Object({
@@ -11,7 +11,10 @@ const body = Type.Strict(
 );
 
 const response = {
-  200: Type.Object({}),
+  200: Type.Object({
+    accessToken: Type.String(),
+    refreshToken: Type.String(),
+  }),
 };
 
 const schema: FastifySchema = { body, response };
@@ -23,7 +26,10 @@ interface T extends RouteGenericInterface {
 export async function login(fastify: FastifyInstance): Promise<void> {
   fastify.post<T>('/login', { schema }, async (req, res) => {
     const { email, password } = req.body;
-    const user = await fastify.prisma.user.findUnique({ where: { email } });
+    const user = await fastify.prisma.user.findUnique({
+      where: { email },
+      select: { id: true, roles: true, password: true },
+    });
 
     if (!user) {
       throw new errors.Unauthorized('Invalid email.');
@@ -35,6 +41,11 @@ export async function login(fastify: FastifyInstance): Promise<void> {
       throw new errors.Unauthorized('Invalid password.');
     }
 
-    return user;
+    const tokenData = { id: user.id, roles: user.roles };
+
+    const accessToken = fastify.generateAccessToken(tokenData);
+    const refreshToken = fastify.generateRefreshToken(tokenData);
+
+    return { accessToken, refreshToken };
   });
 }

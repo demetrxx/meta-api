@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.validatePassword = exports.hashPassword = void 0;
 const crypto = __importStar(require("node:crypto"));
 const SCRYPT_PARAMS = { N: 16384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 };
-const SCRYPT_PREFIX = '$scrypt$N=32768,r=8,p=1,maxmem=67108864$';
+const SCRYPT_PREFIX = '$scrypt$N=16384,r=8,p=1,maxmem=67108864$';
 const serializeHash = (hash, salt) => {
     const saltString = salt.toString('base64').split('=')[0];
     const hashString = hash.toString('base64').split('=')[0];
@@ -77,6 +77,7 @@ const validatePassword = async (password, serHash) => {
                 reject(err);
                 return;
             }
+            console.log(hashedPassword, hash);
             resolve(crypto.timingSafeEqual(hashedPassword, hash));
         };
         crypto.scrypt(password, salt, hash.length, params, callback);

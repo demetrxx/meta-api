@@ -4,7 +4,8 @@ import { type Static, Type } from '@sinclair/typebox';
 const schema = Type.Object({
   PORT: Type.Number(),
   NODE_ENV: Type.Union([Type.Literal('production'), Type.Literal('development')]),
-  JWT_SECRET: Type.String(),
+  JWT_SECRET_ACCESS: Type.String(),
+  JWT_SECRET_REFRESH: Type.String(),
 });
 
 export type IEnvSchema = Static<typeof schema>;

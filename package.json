@@ -6,7 +6,7 @@
   "license": "ISC",
   "main": "server.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
     "start": "nodemon -r tsconfig-paths/register server.ts",
     "start:prod": "NODE_ENV=production node ./dist/server.js",
     "prisma:migrate": "src/prisma migrate dev",
@@ -22,7 +22,8 @@
     "env-schema": "^5.2.0",
     "fastify": "^4.23.2",
     "fastify-plugin": "^4.5.1",
-    "http-errors": "^2.0.0"
+    "http-errors": "^2.0.0",
+    "tsc-alias": "^1.8.8"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",

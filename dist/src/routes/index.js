@@ -1,9 +1,18 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.auth = exports.routes = exports.ping = void 0;
-var ping_1 = require("./ping");
-Object.defineProperty(exports, "ping", { enumerable: true, get: function () { return ping_1.ping; } });
-var firstRoute_1 = require("./firstRoute");
-Object.defineProperty(exports, "routes", { enumerable: true, get: function () { return firstRoute_1.routes; } });
-var auth_1 = require("./auth");
-Object.defineProperty(exports, "auth", { enumerable: true, get: function () { return auth_1.auth; } });
+exports.routes = void 0;
+const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
+const ping_1 = require("@/routes/ping");
+const auth_1 = require("./auth");
+exports.routes = (0, fastify_plugin_1.default)(async (server) => {
+    server.register(async function (privateServer) {
+        privateServer.addHook('onRequest', privateServer.authenticate);
+        privateServer.register(ping_1.ping);
+    });
+    server.register(async function (publicServer) {
+        publicServer.register(auth_1.authRoutes);
+    });
+});

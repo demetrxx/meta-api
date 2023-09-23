@@ -4,12 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.envSchema = void 0;
-const fluent_json_schema_1 = __importDefault(require("fluent-json-schema"));
 const env_schema_1 = __importDefault(require("env-schema"));
-const schema = fluent_json_schema_1.default.object()
-    .prop('PORT', fluent_json_schema_1.default.number().required())
-    .prop('NODE_ENV', fluent_json_schema_1.default.enum(['production', 'development']).required())
-    .prop('JWT_SECRET', fluent_json_schema_1.default.string().required());
+const typebox_1 = require("@sinclair/typebox");
+const schema = typebox_1.Type.Object({
+    PORT: typebox_1.Type.Number(),
+    NODE_ENV: typebox_1.Type.Union([typebox_1.Type.Literal('production'), typebox_1.Type.Literal('development')]),
+    JWT_SECRET_ACCESS: typebox_1.Type.String(),
+    JWT_SECRET_REFRESH: typebox_1.Type.String(),
+});
 exports.envSchema = (0, env_schema_1.default)({
     schema: schema,
     dotenv: true,
