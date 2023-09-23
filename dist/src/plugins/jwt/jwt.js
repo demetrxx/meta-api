@@ -23,6 +23,6 @@ exports.jwtPlugin = (0, fastify_plugin_1.default)(async (server, opts) => {
             reply.send(err);
         }
     });
-    server.decorate('generateAccessToken', (value) => server.jwt.sign(value, { expiresIn: '3h' }));
-    server.decorate('generateRefreshToken', (value) => server.refreshJwtSign(value, { expiresIn: '60d' }));
+    server.decorate('generateAccessToken', (value) => server.jwt.access.sign(value, { expiresIn: '3h' }));
+    server.decorate('generateRefreshToken', (value) => server.jwt.refresh.sign(value, { expiresIn: '60d' }));
 });

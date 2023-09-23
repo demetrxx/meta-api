@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = void 0;
+exports.token = void 0;
 const typebox_1 = require("@sinclair/typebox");
 const http_errors_1 = __importDefault(require("http-errors"));
 const body = typebox_1.Type.Strict(typebox_1.Type.Object({
@@ -15,7 +15,7 @@ const response = {
     }),
 };
 const schema = { body, response };
-async function login(fastify) {
+async function token(fastify) {
     fastify.post('/token', { schema }, async (req, res) => {
         const { refreshToken } = req.body;
         if (!refreshToken) {
@@ -23,11 +23,11 @@ async function login(fastify) {
         }
         let id;
         try {
-            const data = fastify.refreshJwtVerify(refreshToken);
+            const data = fastify.jwt.refresh.verify(refreshToken);
             id = data.id;
         }
         catch (err) {
-            return err;
+            throw new http_errors_1.default.Unauthorized(err.message);
         }
         if (!id) {
             throw new http_errors_1.default.Unauthorized('Invalid token.');
@@ -43,4 +43,4 @@ async function login(fastify) {
         return { accessToken, refreshToken };
     });
 }
-exports.login = login;
+exports.token = token;
