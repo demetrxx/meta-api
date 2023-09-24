@@ -18,8 +18,12 @@ model Post {
 }
 
 model Profile {
-  id   Int     @id @default(autoincrement())
-  name String?
+  id Int @id @default(autoincrement())
+
+  firstName String?
+  lastName  String?
+
+  avatar String?
 
   userId Int  @unique
   user   User @relation(fields: [userId], references: [id])
@@ -28,7 +32,7 @@ model Profile {
 model User {
   id       Int      @id @default(autoincrement())
   email    String   @unique
-  password String
+  password String?
   phone    String?
   profile  Profile?
 
@@ -38,7 +42,7 @@ model User {
   accountStatus String   @default("active")
 
   registrationDate DateTime  @default(now())
-  lastLoginDate    DateTime? @default(now())
+  lastVisitDate    DateTime? @default(now())
 
   oauthProvider String?
   oauthToken    String?

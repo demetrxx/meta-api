@@ -1,7 +1,7 @@
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
 import { Type, type Static } from '@sinclair/typebox';
 import errors from 'http-errors';
-import { type RefreshTokenData } from '@/plugins/jwt/jwt';
+import { type RefreshTokenData } from '@/plugins';
 
 const body = Type.Strict(
   Type.Object({
@@ -50,6 +50,8 @@ export async function token(fastify: FastifyInstance): Promise<void> {
     if (!user) {
       throw new errors.Unauthorized('Invalid token');
     }
+
+    await fastify.prisma.user.update({ where: { id }, data: { lastVisitDate: new Date() } });
 
     const accessToken = fastify.generateAccessToken(user);
 
