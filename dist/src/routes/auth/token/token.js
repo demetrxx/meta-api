@@ -39,6 +39,7 @@ async function token(fastify) {
         if (!user) {
             throw new http_errors_1.default.Unauthorized('Invalid token');
         }
+        await fastify.prisma.user.update({ where: { id }, data: { lastVisitDate: new Date() } });
         const accessToken = fastify.generateAccessToken(user);
         return { accessToken, refreshToken };
     });

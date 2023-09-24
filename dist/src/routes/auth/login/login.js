@@ -23,10 +23,13 @@ async function login(fastify) {
         const { email, password } = req.body;
         const user = await fastify.prisma.user.findUnique({
             where: { email },
-            select: { id: true, roles: true, password: true },
+            select: { id: true, roles: true, password: true, oauthProvider: true },
         });
         if (!user) {
             throw new http_errors_1.default.Unauthorized('Invalid email.');
+        }
+        if (!user.password) {
+            throw new http_errors_1.default.Unauthorized(`Authenticate with your provider (${user.oauthProvider}).`);
         }
         const isPasswordValid = await (0, lib_1.validatePassword)(password, user.password);
         if (!isPasswordValid) {

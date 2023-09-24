@@ -1,0 +1,1 @@
+export { loadRoutes } from './loadRoutes';

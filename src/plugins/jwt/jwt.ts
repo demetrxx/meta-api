@@ -1,11 +1,6 @@
-import {
-  type FastifyPluginAsync,
-  type FastifyPluginOptions,
-  type FastifyReply,
-  type FastifyRequest,
-} from 'fastify';
-import fp from 'fastify-plugin';
 import fastifyJwt, { type JWT as JWTType } from '@fastify/jwt';
+import { type FastifyPluginAsync, type FastifyReply, type FastifyRequest } from 'fastify';
+import fp from 'fastify-plugin';
 export interface RefreshTokenData {
   id: number;
 }
@@ -15,17 +10,17 @@ export interface JwtUser {
   roles?: string[];
 }
 
-export const jwtPlugin: FastifyPluginAsync = fp(async (server, opts: FastifyPluginOptions) => {
-  server.register(fastifyJwt, {
-    secret: opts.JWT_SECRET_ACCESS,
+export const jwtPlugin: FastifyPluginAsync = fp(async (fastify) => {
+  fastify.register(fastifyJwt, {
+    secret: fastify.env.JWT_SECRET_ACCESS,
     namespace: 'access',
   });
-  server.register(fastifyJwt, {
-    secret: opts.JWT_SECRET_REFRESH,
+  fastify.register(fastifyJwt, {
+    secret: fastify.env.JWT_SECRET_REFRESH,
     namespace: 'refresh',
   });
 
-  server.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
+  fastify.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       await request.accessJwtVerify();
     } catch (err) {
@@ -33,12 +28,12 @@ export const jwtPlugin: FastifyPluginAsync = fp(async (server, opts: FastifyPlug
     }
   });
 
-  server.decorate('generateAccessToken', (value) =>
-    server.jwt.access.sign(value, { expiresIn: '3h' }),
+  fastify.decorate('generateAccessToken', (value) =>
+    fastify.jwt.access.sign(value, { expiresIn: '3h' }),
   );
 
-  server.decorate('generateRefreshToken', (value) =>
-    server.jwt.refresh.sign(value, { expiresIn: '60d' }),
+  fastify.decorate('generateRefreshToken', (value) =>
+    fastify.jwt.refresh.sign(value, { expiresIn: '60d' }),
   );
 });
 

@@ -1,6 +1,7 @@
+import { type Static, Type } from '@sinclair/typebox';
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
-import { Type, type Static } from '@sinclair/typebox';
 import errors from 'http-errors';
+
 import { type RefreshTokenData } from '@/plugins';
 
 const body = Type.Strict(
