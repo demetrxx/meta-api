@@ -7,12 +7,12 @@ exports.routes = void 0;
 const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
 const ping_1 = require("@/routes/ping");
 const auth_1 = require("./auth");
-exports.routes = (0, fastify_plugin_1.default)(async (server) => {
-    server.register(async function (privateServer) {
+exports.routes = (0, fastify_plugin_1.default)(async (fastify) => {
+    fastify.register(async function (privateServer) {
         privateServer.addHook('onRequest', privateServer.authenticate);
         privateServer.register(ping_1.ping);
     });
-    server.register(async function (publicServer) {
+    fastify.register(async function (publicServer) {
         publicServer.register(auth_1.authRoutes);
     });
 });

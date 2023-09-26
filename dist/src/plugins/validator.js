@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validatorPlugin = void 0;
-const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
 const ajv_1 = __importDefault(require("ajv"));
-exports.validatorPlugin = (0, fastify_plugin_1.default)(async (server) => {
+const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
+exports.validatorPlugin = (0, fastify_plugin_1.default)(async (fastify) => {
     const ajv = new ajv_1.default({ removeAdditional: 'all' });
-    server.setValidatorCompiler(({ schema }) => ajv.compile(schema));
+    fastify.setValidatorCompiler(({ schema }) => ajv.compile(schema));
 });

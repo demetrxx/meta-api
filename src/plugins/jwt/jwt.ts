@@ -1,6 +1,9 @@
 import fastifyJwt, { type JWT as JWTType } from '@fastify/jwt';
 import { type FastifyPluginAsync, type FastifyReply, type FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
+import errors from 'http-errors';
+
+import { errMsg } from '@/shared/consts/errMsg';
 export interface RefreshTokenData {
   id: number;
 }
@@ -15,6 +18,7 @@ export const jwtPlugin: FastifyPluginAsync = fp(async (fastify) => {
     secret: fastify.env.JWT_SECRET_ACCESS,
     namespace: 'access',
   });
+
   fastify.register(fastifyJwt, {
     secret: fastify.env.JWT_SECRET_REFRESH,
     namespace: 'refresh',
@@ -24,16 +28,16 @@ export const jwtPlugin: FastifyPluginAsync = fp(async (fastify) => {
     try {
       await request.accessJwtVerify();
     } catch (err) {
-      reply.send(err);
+      reply.send(errors.Forbidden(errMsg.expiredAccessToken));
     }
   });
 
   fastify.decorate('generateAccessToken', (value) =>
-    fastify.jwt.access.sign(value, { expiresIn: '3h' }),
+    fastify.jwt.access.sign(value, { expiresIn: '3d' }),
   );
 
   fastify.decorate('generateRefreshToken', (value) =>
-    fastify.jwt.refresh.sign(value, { expiresIn: '60d' }),
+    fastify.jwt.refresh.sign(value, { expiresIn: '30d' }),
   );
 });
 

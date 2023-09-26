@@ -3,6 +3,7 @@ import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } 
 import errors from 'http-errors';
 
 import { type RefreshTokenData } from '@/plugins';
+import { errMsg } from '@/shared/consts/errMsg';
 
 const body = Type.Strict(
   Type.Object({
@@ -27,7 +28,7 @@ export async function token(fastify: FastifyInstance): Promise<void> {
     const { refreshToken } = req.body;
 
     if (!refreshToken) {
-      throw new errors.Unauthorized('Provide your refresh token.');
+      throw new errors.Unauthorized(errMsg.noRefreshToken);
     }
 
     let id: number | undefined;
@@ -35,12 +36,12 @@ export async function token(fastify: FastifyInstance): Promise<void> {
     try {
       const data: RefreshTokenData = fastify.jwt.refresh.verify(refreshToken);
       id = data.id;
-    } catch (err: any) {
-      throw new errors.Unauthorized(err.message);
+    } catch (err) {
+      throw new errors.Unauthorized(errMsg.invalidRefreshToken);
     }
 
     if (!id) {
-      throw new errors.Unauthorized('Invalid token.');
+      throw new errors.Unauthorized(errMsg.invalidRefreshToken);
     }
 
     const user = await fastify.prisma.user.findUnique({
@@ -49,7 +50,7 @@ export async function token(fastify: FastifyInstance): Promise<void> {
     });
 
     if (!user) {
-      throw new errors.Unauthorized('Invalid token');
+      throw new errors.Unauthorized(errMsg.invalidRefreshToken);
     }
 
     await fastify.prisma.user.update({ where: { id }, data: { lastVisitDate: new Date() } });

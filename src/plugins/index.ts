@@ -1,3 +1,3 @@
-export { prismaPlugin } from './prisma';
-export { jwtPlugin, type RefreshTokenData, type JwtUser } from './jwt/jwt';
-export { validatorPlugin } from './validator';
+export { jwtPlugin, type JwtUser, type RefreshTokenData } from './jwt/jwt';
+export { prismaPlugin } from './prisma/prisma';
+export { validatorPlugin } from './validator/validator';

@@ -4,18 +4,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.jwtPlugin = void 0;
-const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
 const jwt_1 = __importDefault(require("@fastify/jwt"));
-exports.jwtPlugin = (0, fastify_plugin_1.default)(async (server, opts) => {
-    server.register(jwt_1.default, {
-        secret: opts.JWT_SECRET_ACCESS,
+const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
+exports.jwtPlugin = (0, fastify_plugin_1.default)(async (fastify) => {
+    fastify.register(jwt_1.default, {
+        secret: fastify.env.JWT_SECRET_ACCESS,
         namespace: 'access',
     });
-    server.register(jwt_1.default, {
-        secret: opts.JWT_SECRET_REFRESH,
+    fastify.register(jwt_1.default, {
+        secret: fastify.env.JWT_SECRET_REFRESH,
         namespace: 'refresh',
     });
-    server.decorate('authenticate', async (request, reply) => {
+    fastify.decorate('authenticate', async (request, reply) => {
         try {
             await request.accessJwtVerify();
         }
@@ -23,6 +23,6 @@ exports.jwtPlugin = (0, fastify_plugin_1.default)(async (server, opts) => {
             reply.send(err);
         }
     });
-    server.decorate('generateAccessToken', (value) => server.jwt.access.sign(value, { expiresIn: '3h' }));
-    server.decorate('generateRefreshToken', (value) => server.jwt.refresh.sign(value, { expiresIn: '60d' }));
+    fastify.decorate('generateAccessToken', (value) => fastify.jwt.access.sign(value, { expiresIn: '3h' }));
+    fastify.decorate('generateRefreshToken', (value) => fastify.jwt.refresh.sign(value, { expiresIn: '60d' }));
 });

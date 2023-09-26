@@ -4,13 +4,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.prismaPlugin = void 0;
-const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
 const client_1 = require("@prisma/client");
-exports.prismaPlugin = (0, fastify_plugin_1.default)(async (server, options) => {
+const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
+exports.prismaPlugin = (0, fastify_plugin_1.default)(async (fastify, options) => {
     const prisma = new client_1.PrismaClient();
     await prisma.$connect();
-    server.decorate('prisma', prisma);
-    server.addHook('onClose', async (server) => {
-        await server.prisma.$disconnect();
+    fastify.decorate('prisma', prisma);
+    fastify.addHook('onClose', async (fastify) => {
+        await fastify.prisma.$disconnect();
     });
 });

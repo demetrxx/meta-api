@@ -1,16 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authRoutes = void 0;
-const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
-const register_1 = require("./register/register");
+const system_1 = require("@/shared/system");
+const google_1 = require("./google/google");
 const login_1 = require("./login/login");
+const register_1 = require("./register/register");
 const token_1 = require("./token/token");
-exports.authRoutes = (0, fastify_plugin_1.default)(async (server) => {
-    const opts = { prefix: '/auth' };
-    server.register(register_1.register, opts);
-    server.register(login_1.login, opts);
-    server.register(token_1.token, opts);
-});
+exports.authRoutes = (0, system_1.loadRoutes)([register_1.register, login_1.login, token_1.token, google_1.google], { prefix: '/auth' });

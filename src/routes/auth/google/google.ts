@@ -1,9 +1,9 @@
 import oauthPlugin, { type OAuth2Namespace } from '@fastify/oauth2';
 import { type FastifyInstance } from 'fastify';
-import errors from 'http-errors';
+import { objectToSearchParams } from 'shared/lib';
 import sget from 'simple-get';
 
-import { objectToSearchParams } from '@/lib';
+import { errMsg } from '@/shared/consts/errMsg';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -21,16 +21,11 @@ interface GoogleUser {
   locale?: string;
 }
 
-const stateErrMsg = {
-  emailNotConfirmed: 'Email is not confirmed.',
-  googleFailure: 'Failed to get user data from Google.',
-} as const;
-
 interface RedirectState {
   success: boolean;
   refreshToken?: string;
   accessToken?: string;
-  errMsg?: ValueOf<typeof stateErrMsg>;
+  errMsg?: ValueOf<typeof errMsg>;
   type?: 'login' | 'register';
 }
 
@@ -52,20 +47,20 @@ export async function google(fastify: FastifyInstance): Promise<void> {
   });
 
   fastify.get('/google/callback', async function (request, reply) {
+    function redirect(state: RedirectState): void {
+      const params = objectToSearchParams(state);
+
+      reply.redirect(
+        `${fastify.env.CLIENT_URL}${fastify.env.GOOGLE_CLIENT_REDIRECT_PATH}${params}`,
+      );
+    }
+
     try {
       const { token } = await this.googleOAuth2.getAccessTokenFromAuthorizationCodeFlow(request);
 
-      function redirect(state: RedirectState): void {
-        const params = objectToSearchParams(state);
-
-        reply.redirect(
-          `${fastify.env.CLIENT_URL}${fastify.env.GOOGLE_CLIENT_REDIRECT_PATH}${params}`,
-        );
-      }
-
       const handleGoogleUserData = async (err: Error | null, data: GoogleUser): Promise<void> => {
         if (err) {
-          redirect({ success: false, errMsg: stateErrMsg.googleFailure });
+          redirect({ success: false, errMsg: errMsg.googleFailure });
           return;
         }
 
@@ -73,7 +68,7 @@ export async function google(fastify: FastifyInstance): Promise<void> {
 
         if (user) {
           if (!user.isEmailVerified) {
-            redirect({ success: false, errMsg: stateErrMsg.emailNotConfirmed });
+            redirect({ success: false, errMsg: errMsg.emailNotConfirmed });
             return;
           }
 
@@ -119,12 +114,12 @@ export async function google(fastify: FastifyInstance): Promise<void> {
           headers: { Authorization: 'Bearer ' + token.access_token },
           json: true,
         },
-        (err, res, data) => {
+        (err, _, data) => {
           handleGoogleUserData(err, data as GoogleUser);
         },
       );
     } catch (err: any) {
-      throw new errors.Unauthorized(err.message);
+      redirect({ success: false, errMsg: err.message });
     }
 
     await reply;
