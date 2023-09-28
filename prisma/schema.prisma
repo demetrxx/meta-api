@@ -30,13 +30,10 @@ model Profile {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  password String?
-  phone    String?
-  profile  Profile?
-
-  isEmailVerified Boolean @default(false)
+  id      Int      @id @default(autoincrement())
+  email   String   @unique @db.VarChar(320)
+  phone   String?
+  profile Profile?
 
   roles         String[] @default(["user"])
   accountStatus String   @default("active")
@@ -44,7 +41,68 @@ model User {
   registrationDate DateTime  @default(now())
   lastVisitDate    DateTime? @default(now())
 
-  oauthProvider String?
-  oauthToken    String?
-  googleId      String? @unique
+  oauthProvider  String?
+  googleId       String?          @unique
+  HistoryProfile HistoryProfile[]
+}
+
+// History
+
+model HistoryQuestion {
+  id   Int     @id @default(autoincrement())
+  name String
+  desc String?
+  type String? @db.VarChar(10)
+  img  String?
+
+  topicId          Int
+  topic            HistoryTopic     @relation(fields: [topicId], references: [id])
+  keyWords         HistoryKeyWord[]
+  solution         String?
+  whereToLearn     String[]
+  advice           String?
+  profilesAnswered HistoryProfile[] @relation("profilesAnswered")
+  profilesFailed   HistoryProfile[] @relation("profilesFailed")
+}
+
+model HistoryTopic {
+  id    Int    @id @default(autoincrement())
+  name  String @db.VarChar(255)
+  order Int    @unique
+
+  historyQuestion HistoryQuestion[]
+  historyKeyWord  HistoryKeyWord[]
+  HistoryProgress HistoryProgress[]
+}
+
+model HistoryKeyWord {
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar(100)
+  topicId         Int               @unique
+  topic           HistoryTopic      @relation(fields: [topicId], references: [id])
+  historyQuestion HistoryQuestion[]
+}
+
+model HistoryProfile {
+  id Int @id @default(autoincrement())
+
+  answered HistoryQuestion[] @relation("profilesAnswered")
+  failed   HistoryQuestion[] @relation("profilesFailed")
+
+  progressTotal Int
+
+  userId          Int
+  user            User              @relation(fields: [userId], references: [id])
+  HistoryProgress HistoryProgress[]
+}
+
+model HistoryProgress {
+  id    Int @id @default(autoincrement())
+  value Int
+
+  topicId      Int
+  historyTopic HistoryTopic @relation(fields: [topicId], references: [id])
+
+  profileId      Int
+  historyProfile HistoryProfile @relation(fields: [profileId], references: [id])
 }
