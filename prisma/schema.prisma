@@ -7,15 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
-  content   String?
-  published Boolean  @default(false)
-  authorId  Int
-}
+// User
 
 model Profile {
   id Int @id @default(autoincrement())
@@ -55,14 +47,16 @@ model HistoryQuestion {
   type String? @db.VarChar(10)
   img  String?
 
-  topicId          Int
-  topic            HistoryTopic     @relation(fields: [topicId], references: [id])
-  keyWords         HistoryKeyWord[]
-  solution         String?
-  whereToLearn     String[]
-  advice           String?
+  topicId      Int
+  topic        HistoryTopic     @relation(fields: [topicId], references: [id])
+  keyWords     HistoryKeyWord[]
+  solution     String?
+  whereToLearn String[]
+  advice       String?
+
   profilesAnswered HistoryProfile[] @relation("profilesAnswered")
   profilesFailed   HistoryProfile[] @relation("profilesFailed")
+  tickets          HistoryTicket[]
 }
 
 model HistoryTopic {
@@ -90,10 +84,13 @@ model HistoryProfile {
   failed   HistoryQuestion[] @relation("profilesFailed")
 
   progressTotal Int
+  timeAvarage   Int
 
-  userId          Int
-  user            User              @relation(fields: [userId], references: [id])
-  HistoryProgress HistoryProgress[]
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  HistoryProgress    HistoryProgress[]
+  HistoryRealSession HistoryRealSession[]
 }
 
 model HistoryProgress {
@@ -105,4 +102,23 @@ model HistoryProgress {
 
   profileId      Int
   historyProfile HistoryProfile @relation(fields: [profileId], references: [id])
+}
+
+model HistoryTicket {
+  id                 Int                  @id @default(autoincrement())
+  questions          HistoryQuestion[]
+  HistoryRealSession HistoryRealSession[]
+}
+
+model HistoryRealSession {
+  id    Int     @id @default(autoincrement())
+  done  Boolean
+  time  Int
+  score Int
+
+  ticketId Int
+  ticket   HistoryTicket @relation(references: [id], fields: [ticketId])
+
+  profileId Int
+  profile   HistoryProfile @relation(references: [id], fields: [profileId])
 }
