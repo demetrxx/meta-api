@@ -38,14 +38,18 @@ model User {
   HistoryProfile HistoryProfile[]
 }
 
-// History
+// --- History ---
+
+// Practice
 
 model HistoryQuestion {
-  id   Int     @id @default(autoincrement())
-  name String
-  desc String?
-  type String? @db.VarChar(10)
-  img  String?
+  id      Int     @id @default(autoincrement())
+  name    String
+  desc    String?
+  type    String? @db.VarChar(10)
+  img     String?
+  options Json
+  answer  Json
 
   topicId      Int
   topic        HistoryTopic     @relation(fields: [topicId], references: [id])
@@ -54,6 +58,7 @@ model HistoryQuestion {
   whereToLearn String[]
   advice       String?
 
+  profilesSeen     HistoryProfile[] @relation("profilesSeen")
   profilesAnswered HistoryProfile[] @relation("profilesAnswered")
   profilesFailed   HistoryProfile[] @relation("profilesFailed")
   tickets          HistoryTicket[]
@@ -77,11 +82,21 @@ model HistoryKeyWord {
   historyQuestion HistoryQuestion[]
 }
 
+model HistoryTicket {
+  id                 Int                  @id @default(autoincrement())
+  questions          HistoryQuestion[]
+  HistoryRealSession HistoryRealSession[]
+}
+
+// Progress
+
 model HistoryProfile {
   id Int @id @default(autoincrement())
 
-  answered HistoryQuestion[] @relation("profilesAnswered")
-  failed   HistoryQuestion[] @relation("profilesFailed")
+  answeredIds Int[]
+  seen        HistoryQuestion[] @relation("profilesSeen")
+  answered    HistoryQuestion[] @relation("profilesAnswered")
+  failed      HistoryQuestion[] @relation("profilesFailed")
 
   progressTotal Int
   timeAvarage   Int
@@ -104,17 +119,12 @@ model HistoryProgress {
   historyProfile HistoryProfile @relation(fields: [profileId], references: [id])
 }
 
-model HistoryTicket {
-  id                 Int                  @id @default(autoincrement())
-  questions          HistoryQuestion[]
-  HistoryRealSession HistoryRealSession[]
-}
-
 model HistoryRealSession {
-  id    Int     @id @default(autoincrement())
-  done  Boolean
-  time  Int
-  score Int
+  id      Int     @id @default(autoincrement())
+  done    Boolean @default(false)
+  time    Int
+  score   Int?
+  answers Json
 
   ticketId Int
   ticket   HistoryTicket @relation(references: [id], fields: [ticketId])

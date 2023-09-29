@@ -11,7 +11,7 @@ declare module 'fastify' {
   }
 }
 
-interface GoogleUser {
+export interface GoogleUser {
   id?: string;
   email: string;
   verified_email?: boolean;
@@ -21,7 +21,7 @@ interface GoogleUser {
   locale?: string;
 }
 
-interface RedirectState {
+export interface RedirectState {
   success: boolean;
   refreshToken?: string;
   accessToken?: string;
@@ -67,11 +67,6 @@ export async function google(fastify: FastifyInstance): Promise<void> {
         const user = await this.prisma.user.findUnique({ where: { email: data.email } });
 
         if (user) {
-          if (!user.isEmailVerified) {
-            redirect({ success: false, errMsg: errMsg.emailNotConfirmed });
-            return;
-          }
-
           // Login
           const tokenData = { id: user.id, roles: user.roles };
 
@@ -88,7 +83,6 @@ export async function google(fastify: FastifyInstance): Promise<void> {
             googleId: data.id,
             oauthProvider: 'google',
             email: data.email,
-            isEmailVerified: true,
             profile: {
               create: {
                 firstName: data.given_name,
