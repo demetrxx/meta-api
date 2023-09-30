@@ -8,4 +8,7 @@ exports.errMsg = {
     emailNotConfirmed: '3',
     noRefreshToken: '4',
     invalidRefreshToken: '5',
+    // answers
+    invalidOrderQInput: '6',
+    invalidMatchQInput: '7',
 };

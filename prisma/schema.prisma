@@ -40,7 +40,7 @@ model User {
 
   oauthProvider  String?
   googleId       String?          @unique
-  HistoryProfile HistoryProfile[]
+  historyProfile HistoryProfile[]
 }
 
 // --- History ---
@@ -61,7 +61,7 @@ model HistoryQuestion {
   type    HistoryQuestionType
   img     String?
   options Json
-  answer  Json
+  correct Json
 
   topicId      Int
   topic        HistoryTopic     @relation(fields: [topicId], references: [id])
@@ -81,23 +81,23 @@ model HistoryTopic {
   name  String @db.VarChar(255)
   order Int    @unique
 
-  historyQuestion HistoryQuestion[]
-  historyKeyWord  HistoryKeyWord[]
-  HistoryProgress HistoryProgress[]
+  questions  HistoryQuestion[]
+  keyWords   HistoryKeyWord[]
+  progresses HistoryProgress[]
 }
 
 model HistoryKeyWord {
-  id              Int               @id @default(autoincrement())
-  name            String            @db.VarChar(100)
-  topicId         Int               @unique
-  topic           HistoryTopic      @relation(fields: [topicId], references: [id])
-  historyQuestion HistoryQuestion[]
+  id        Int               @id @default(autoincrement())
+  name      String            @db.VarChar(100)
+  topicId   Int               @unique
+  topic     HistoryTopic      @relation(fields: [topicId], references: [id])
+  questions HistoryQuestion[]
 }
 
 model HistoryTicket {
-  id                 Int                  @id @default(autoincrement())
-  questions          HistoryQuestion[]
-  HistoryRealSession HistoryRealSession[]
+  id           Int                  @id @default(autoincrement())
+  questions    HistoryQuestion[]
+  realSessions HistoryRealSession[]
 }
 
 // Progress
@@ -105,30 +105,33 @@ model HistoryTicket {
 model HistoryProfile {
   id Int @id @default(autoincrement())
 
-  answeredIds Int[]
-  seen        HistoryQuestion[] @relation("profilesSeen")
-  answered    HistoryQuestion[] @relation("profilesAnswered")
-  failed      HistoryQuestion[] @relation("profilesFailed")
+  seen     HistoryQuestion[] @relation("profilesSeen")
+  answered HistoryQuestion[] @relation("profilesAnswered")
+  failed   HistoryQuestion[] @relation("profilesFailed")
 
-  progressTotal Int
-  timeAvarage   Int
+  progressTotal       Int
+  progressThemes      Int
+  progressRealSession Int
+
+  timeAvarage Int
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
 
-  HistoryProgress    HistoryProgress[]
-  HistoryRealSession HistoryRealSession[]
+  progresses   HistoryProgress[]
+  realSessions HistoryRealSession[]
 }
 
 model HistoryProgress {
-  id    Int @id @default(autoincrement())
   value Int
 
-  topicId      Int
-  historyTopic HistoryTopic @relation(fields: [topicId], references: [id])
+  topicId Int
+  topic   HistoryTopic @relation(fields: [topicId], references: [id])
 
-  profileId      Int
-  historyProfile HistoryProfile @relation(fields: [profileId], references: [id])
+  profileId Int
+  profile   HistoryProfile @relation(fields: [profileId], references: [id])
+
+  @@id([topicId, profileId])
 }
 
 model HistoryRealSession {

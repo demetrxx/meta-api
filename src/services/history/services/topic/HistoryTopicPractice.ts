@@ -2,9 +2,11 @@ import { type HistoryQuestion } from '@prisma/client';
 import { type FastifyInstance } from 'fastify';
 import errors from 'http-errors';
 
-function getIdsMap(items?: Array<{ id: number }>): number[] {
-  return items?.map((i) => i.id) ?? [];
-}
+import { getThemeProgress } from '@/lib';
+import { errMsg } from '@/shared/consts/errMsg';
+import { getIdsArr } from '@/shared/lib';
+
+import { evalHistoryAnswer } from '../../lib/evalHistoryAnswer/evalHistoryAnswer';
 
 export class HistoryTopicPractice {
   db: FastifyInstance['prisma'];
@@ -13,12 +15,44 @@ export class HistoryTopicPractice {
   }
 
   async recordAnswer({
-    answer,
+    given,
     questionId,
+    profileId,
   }: {
-    answer: string;
+    given: string;
     questionId: number;
-  }): Promise<void> {}
+    profileId: number;
+  }): Promise<void> {
+    const question = await this.db.historyQuestion.findUnique({ where: { id: questionId } });
+
+    if (!question) {
+      throw new errors.BadRequest(errMsg.invalidQuestionId);
+    }
+
+    const { type, correct, topicId } = question;
+
+    const { isValid } = evalHistoryAnswer({ given, type, correct });
+    const answeredOrFailed = isValid ? 'answered' : 'failed';
+
+    const { _count } = await this.db.historyProfile.update({
+      where: { id: profileId },
+      data: {
+        seen: { connect: { id: questionId } },
+        [answeredOrFailed]: { connect: { id: questionId } },
+      },
+      select: {
+        _count: { select: { answered: true, failed: true } },
+        // progresses: { where: { topicId }, select: { id: true } },
+      },
+    });
+
+    await this.updateTopicProgress({
+      topicId,
+      profileId,
+      failedCount: _count.failed,
+      answeredCount: _count.answered,
+    });
+  }
 
   async getQuestions({
     topicId,
@@ -35,7 +69,7 @@ export class HistoryTopicPractice {
     });
 
     if (!profile) {
-      throw errors.InternalServerError('Invalid profile.');
+      throw errors.InternalServerError('History profile not found.');
     }
 
     const questions: HistoryQuestion[] = [];
@@ -44,7 +78,7 @@ export class HistoryTopicPractice {
     const unseenQs = await this.db.historyQuestion.findMany({
       where: {
         topic: { id: topicId },
-        id: { notIn: getIdsMap(profile.seen) },
+        id: { notIn: getIdsArr(profile.seen) },
       },
       take: QS_NUM,
     });
@@ -55,7 +89,7 @@ export class HistoryTopicPractice {
       const failedQs = await this.db.historyQuestion.findMany({
         where: {
           topic: { id: topicId },
-          id: { in: getIdsMap(profile.failed) },
+          id: { in: getIdsArr(profile.failed) },
         },
         take: QS_NUM - questions.length,
       });
@@ -67,7 +101,7 @@ export class HistoryTopicPractice {
       const extraQs = await this.db.historyQuestion.findMany({
         where: {
           topic: { id: topicId },
-          id: { notIn: getIdsMap(profile.failed) },
+          id: { notIn: getIdsArr(profile.failed) },
         },
         take: QS_NUM - questions.length,
       });
@@ -80,5 +114,28 @@ export class HistoryTopicPractice {
     }
 
     return questions;
+  }
+
+  private async updateTopicProgress({
+    topicId,
+    profileId,
+    answeredCount,
+    failedCount,
+  }: {
+    topicId: number;
+    profileId: number;
+    answeredCount: number;
+    failedCount: number;
+  }): Promise<void> {
+    const progress = getThemeProgress({ answered: answeredCount, failed: failedCount });
+    await this.db.historyProgress.update({
+      where: {
+        topicId_profileId: {
+          topicId,
+          profileId,
+        },
+      },
+      data: { value: progress },
+    });
   }
 }
