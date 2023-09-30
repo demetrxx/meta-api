@@ -37,10 +37,6 @@ async function google(fastify) {
                 }
                 const user = await this.prisma.user.findUnique({ where: { email: data.email } });
                 if (user) {
-                    if (!user.isEmailVerified) {
-                        redirect({ success: false, errMsg: errMsg_1.errMsg.emailNotConfirmed });
-                        return;
-                    }
                     // Login
                     const tokenData = { id: user.id, roles: user.roles };
                     const accessToken = this.generateAccessToken(tokenData);
@@ -54,7 +50,6 @@ async function google(fastify) {
                         googleId: data.id,
                         oauthProvider: 'google',
                         email: data.email,
-                        isEmailVerified: true,
                         profile: {
                             create: {
                                 firstName: data.given_name,

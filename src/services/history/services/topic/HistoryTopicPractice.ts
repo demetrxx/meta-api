@@ -12,6 +12,14 @@ export class HistoryTopicPractice {
     this.db = app.prisma;
   }
 
+  async recordAnswer({
+    answer,
+    questionId,
+  }: {
+    answer: string;
+    questionId: number;
+  }): Promise<void> {}
+
   async getQuestions({
     topicId,
     profileId,

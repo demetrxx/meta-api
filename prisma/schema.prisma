@@ -9,6 +9,11 @@ datasource db {
 
 // User
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model Profile {
   id Int @id @default(autoincrement())
 
@@ -27,8 +32,8 @@ model User {
   phone   String?
   profile Profile?
 
-  roles         String[] @default(["user"])
-  accountStatus String   @default("active")
+  roles         Role[] @default([USER])
+  accountStatus String @default("active")
 
   registrationDate DateTime  @default(now())
   lastVisitDate    DateTime? @default(now())
@@ -42,11 +47,18 @@ model User {
 
 // Practice
 
+enum HistoryQuestionType {
+  SINGLE
+  ORDER
+  MATCH
+  SELECT
+}
+
 model HistoryQuestion {
-  id      Int     @id @default(autoincrement())
+  id      Int                 @id @default(autoincrement())
   name    String
   desc    String?
-  type    String? @db.VarChar(10)
+  type    HistoryQuestionType
   img     String?
   options Json
   answer  Json
