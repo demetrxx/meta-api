@@ -12,41 +12,44 @@ function evalSingle({ correct, given }) {
     return { isValid: res, score: Number(res) };
 }
 function evalOrder({ correct, given }) {
-    const givenArr = JSON.parse(given);
-    const correctArr = JSON.parse(correct);
-    if (!Array.isArray(givenArr) || givenArr.length !== 4) {
-        throw http_errors_1.default.BadRequest(errMsg_1.errMsg.invalidMatchQInput);
+    if (!Array.isArray(correct)) {
+        throw http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidQuestionData);
     }
-    if (correctArr.every((i, idx) => i === givenArr[idx])) {
+    if (!Array.isArray(given) || given.length !== 4) {
+        throw http_errors_1.default.BadRequest(errMsg_1.errMsg.invalidQInput);
+    }
+    if (correct.every((i, idx) => i === given[idx])) {
         return { isValid: true, score: 3 };
     }
-    if (correctArr[0] === givenArr[0] && correctArr[3] === givenArr[3]) {
+    if (correct[0] === given[0] && correct[3] === given[3]) {
         return { isValid: false, score: 2 };
     }
-    if (correctArr[0] === givenArr[0] || correctArr[3] === givenArr[3]) {
+    if (correct[0] === given[0] || correct[3] === given[3]) {
         return { isValid: false, score: 1 };
     }
     return { isValid: false, score: 0 };
 }
 function evalMatch({ correct, given }) {
-    const givenArr = JSON.parse(given);
-    const correctArr = JSON.parse(correct);
-    if (!Array.isArray(givenArr) || givenArr.length !== 4) {
-        throw http_errors_1.default.BadRequest(errMsg_1.errMsg.invalidMatchQInput);
+    if (!Array.isArray(correct)) {
+        throw http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidQuestionData);
     }
-    const score = correctArr.filter((i, idx) => i === givenArr[idx]).length;
+    if (!Array.isArray(given) || given.length !== 4) {
+        throw http_errors_1.default.BadRequest(errMsg_1.errMsg.invalidQInput);
+    }
+    const score = correct.filter((i, idx) => i === given[idx]).length;
     const isValid = score === 4;
     return { score, isValid };
 }
 function evalSelect({ correct, given }) {
-    const correctArr = JSON.parse(correct);
-    const givenArr = JSON.parse(given);
-    if (!Array.isArray(givenArr) || givenArr.length !== 3) {
-        throw http_errors_1.default.BadRequest(errMsg_1.errMsg.invalidMatchQInput);
+    if (!Array.isArray(correct)) {
+        throw http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidQuestionData);
+    }
+    if (!Array.isArray(given) || given.length !== 3) {
+        throw http_errors_1.default.BadRequest(errMsg_1.errMsg.invalidQInput);
     }
     let score = 0;
-    correctArr.forEach((i) => {
-        if (givenArr.includes(i)) {
+    correct.forEach((i) => {
+        if (given.includes(i)) {
             score += 1;
         }
     });

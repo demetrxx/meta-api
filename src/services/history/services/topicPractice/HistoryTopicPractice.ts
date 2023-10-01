@@ -6,7 +6,8 @@ import { getThemeProgress } from '@/lib';
 import { errMsg } from '@/shared/consts/errMsg';
 import { getIdsArr } from '@/shared/lib';
 
-import { evalHistoryAnswer } from '../../lib/evalHistoryAnswer/evalHistoryAnswer';
+import { HISTORY_THEMES_COUNT } from '../../consts/common';
+import { evalHistoryAnswer } from '../../lib';
 
 export class HistoryTopicPractice {
   db: FastifyInstance['prisma'];
@@ -42,7 +43,6 @@ export class HistoryTopicPractice {
       },
       select: {
         _count: { select: { answered: true, failed: true } },
-        // progresses: { where: { topicId }, select: { id: true } },
       },
     });
 
@@ -136,6 +136,36 @@ export class HistoryTopicPractice {
         },
       },
       data: { value: progress },
+    });
+  }
+
+  private async updateTotalProgress({ profileId }: { profileId: number }): Promise<void> {
+    const profile = await this.db.historyProfile.findUnique({
+      where: { id: profileId },
+      select: { progresses: { select: { value: true } }, progressRealSession: true },
+    });
+
+    if (!profile) {
+      throw new errors.InternalServerError(errMsg.invalidProfileId);
+    }
+
+    const { progresses, progressRealSession } = profile;
+
+    if (progresses.length !== HISTORY_THEMES_COUNT) {
+      throw new errors.InternalServerError(errMsg.invalidThemeProgressesCount);
+    }
+
+    const sum = progresses.reduce((acc, i) => {
+      acc += i.value;
+      return acc;
+    }, 0);
+
+    const progressThemes = Math.round(sum / HISTORY_THEMES_COUNT);
+    const progressTotal = progressThemes + progressRealSession / 2;
+
+    await this.db.historyProfile.update({
+      where: { id: profileId },
+      data: { progressThemes, progressTotal },
     });
   }
 }

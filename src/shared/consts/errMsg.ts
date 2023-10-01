@@ -10,4 +10,6 @@ export const errMsg = {
   invalidQInput: '2.1',
   invalidQuestionId: '2.3',
   invalidQuestionData: '500',
+  invalidThemeProgressesCount: '500',
+  invalidProfileId: '500',
 } as const;

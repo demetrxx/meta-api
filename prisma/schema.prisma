@@ -79,6 +79,7 @@ model HistoryQuestion {
 model HistoryTopic {
   id    Int    @id @default(autoincrement())
   name  String @db.VarChar(255)
+  desc  String
   order Int    @unique
 
   questions  HistoryQuestion[]
@@ -109,11 +110,11 @@ model HistoryProfile {
   answered HistoryQuestion[] @relation("profilesAnswered")
   failed   HistoryQuestion[] @relation("profilesFailed")
 
-  progressTotal       Int
-  progressThemes      Int
-  progressRealSession Int
+  progressTotal       Int @default(0)
+  progressThemes      Int @default(0)
+  progressRealSession Int @default(0)
 
-  timeAvarage Int
+  timeAvarage Int?
 
   userId Int
   user   User @relation(fields: [userId], references: [id])
@@ -123,7 +124,7 @@ model HistoryProfile {
 }
 
 model HistoryProgress {
-  value Int
+  value Int @default(0)
 
   topicId Int
   topic   HistoryTopic @relation(fields: [topicId], references: [id])
