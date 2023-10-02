@@ -15,7 +15,7 @@ class HistoryTopicPractice {
     constructor(app) {
         this.db = app.prisma;
     }
-    async recordAnswer({ given, questionId, profileId, }) {
+    async recordAnswer({ given, questionId, userId, }) {
         const question = await this.db.historyQuestion.findUnique({ where: { id: questionId } });
         if (!question) {
             throw new http_errors_1.default.BadRequest(errMsg_1.errMsg.invalidQuestionId);
@@ -23,14 +23,15 @@ class HistoryTopicPractice {
         const { type, correct, topicId } = question;
         const { isValid } = (0, lib_3.evalHistoryAnswer)({ given, type, correct });
         const answeredOrFailed = isValid ? 'answered' : 'failed';
-        const { _count } = await this.db.historyProfile.update({
-            where: { id: profileId },
+        const { _count, id: profileId } = await this.db.historyProfile.update({
+            where: { userId },
             data: {
                 seen: { connect: { id: questionId } },
                 [answeredOrFailed]: { connect: { id: questionId } },
             },
             select: {
                 _count: { select: { answered: true, failed: true } },
+                id: true,
             },
         });
         await this.updateTopicProgress({
@@ -40,10 +41,10 @@ class HistoryTopicPractice {
             answeredCount: _count.answered,
         });
     }
-    async getQuestions({ topicId, profileId, }) {
+    async getQuestions({ topicId, userId, }) {
         const QS_NUM = 10;
         const profile = await this.db.historyProfile.findUnique({
-            where: { id: profileId },
+            where: { userId },
             select: { seen: { select: { id: true } }, failed: { select: { id: true } } },
         });
         if (!profile) {
@@ -81,7 +82,7 @@ class HistoryTopicPractice {
             });
             extraQs.push(...extraQs);
             await this.db.historyProfile.update({
-                where: { id: profileId },
+                where: { userId },
                 data: { seen: { set: extraQs.map(({ id }) => ({ id })) } },
             });
         }
@@ -115,11 +116,11 @@ class HistoryTopicPractice {
             acc += i.value;
             return acc;
         }, 0);
-        const progressThemes = Math.round(sum / common_1.HISTORY_THEMES_COUNT);
-        const progressTotal = progressThemes + progressRealSession / 2;
+        const progressTopics = Math.round(sum / common_1.HISTORY_THEMES_COUNT);
+        const progressTotal = progressTopics + progressRealSession / 2;
         await this.db.historyProfile.update({
             where: { id: profileId },
-            data: { progressThemes, progressTotal },
+            data: { progressTopics, progressTotal },
         });
     }
 }

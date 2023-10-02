@@ -9,8 +9,15 @@ import { getIdsArr } from '@/shared/lib';
 import { HISTORY_THEMES_COUNT } from '../../consts/common';
 import { evalHistoryAnswer } from '../../lib';
 
+declare module 'fastify' {
+  interface FastifyInstance {
+    historyTopicPractice: HistoryTopicPractice;
+  }
+}
+
 export class HistoryTopicPractice {
-  db: FastifyInstance['prisma'];
+  private readonly db: FastifyInstance['prisma'];
+
   constructor(app: FastifyInstance) {
     this.db = app.prisma;
   }
@@ -18,11 +25,11 @@ export class HistoryTopicPractice {
   async recordAnswer({
     given,
     questionId,
-    profileId,
+    userId,
   }: {
     given: string;
     questionId: number;
-    profileId: number;
+    userId: number;
   }): Promise<void> {
     const question = await this.db.historyQuestion.findUnique({ where: { id: questionId } });
 
@@ -35,14 +42,15 @@ export class HistoryTopicPractice {
     const { isValid } = evalHistoryAnswer({ given, type, correct });
     const answeredOrFailed = isValid ? 'answered' : 'failed';
 
-    const { _count } = await this.db.historyProfile.update({
-      where: { id: profileId },
+    const { _count, id: profileId } = await this.db.historyProfile.update({
+      where: { userId },
       data: {
         seen: { connect: { id: questionId } },
         [answeredOrFailed]: { connect: { id: questionId } },
       },
       select: {
         _count: { select: { answered: true, failed: true } },
+        id: true,
       },
     });
 
@@ -56,15 +64,15 @@ export class HistoryTopicPractice {
 
   async getQuestions({
     topicId,
-    profileId,
+    userId,
   }: {
     topicId: number;
-    profileId: number;
+    userId: number;
   }): Promise<HistoryQuestion[]> {
     const QS_NUM = 10;
 
     const profile = await this.db.historyProfile.findUnique({
-      where: { id: profileId },
+      where: { userId },
       select: { seen: { select: { id: true } }, failed: { select: { id: true } } },
     });
 
@@ -108,7 +116,7 @@ export class HistoryTopicPractice {
       extraQs.push(...extraQs);
 
       await this.db.historyProfile.update({
-        where: { id: profileId },
+        where: { userId },
         data: { seen: { set: extraQs.map(({ id }) => ({ id })) } },
       });
     }

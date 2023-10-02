@@ -116,7 +116,7 @@ model HistoryProfile {
 
   timeAvarage Int?
 
-  userId Int
+  userId Int  @unique
   user   User @relation(fields: [userId], references: [id])
 
   progresses   HistoryProgress[]
