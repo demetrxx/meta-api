@@ -160,12 +160,12 @@ export class HistoryTopicPractice {
       return acc;
     }, 0);
 
-    const progressThemes = Math.round(sum / HISTORY_THEMES_COUNT);
-    const progressTotal = progressThemes + progressRealSession / 2;
+    const progressTopics = Math.round(sum / HISTORY_THEMES_COUNT);
+    const progressTotal = progressTopics + progressRealSession / 2;
 
     await this.db.historyProfile.update({
       where: { id: profileId },
-      data: { progressThemes, progressTotal },
+      data: { progressTopics, progressTotal },
     });
   }
 }

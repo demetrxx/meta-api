@@ -111,7 +111,7 @@ model HistoryProfile {
   failed   HistoryQuestion[] @relation("profilesFailed")
 
   progressTotal       Int @default(0)
-  progressThemes      Int @default(0)
+  progressTopics      Int @default(0)
   progressRealSession Int @default(0)
 
   timeAvarage Int?
