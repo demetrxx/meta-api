@@ -8,6 +8,7 @@ import { getIdsArr } from '@/shared/lib';
 
 import { HISTORY_THEMES_COUNT } from '../../consts/common';
 import { evalHistoryAnswer } from '../../lib';
+import { type HistoryQuestionAnswer } from '../../types/question';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -27,7 +28,7 @@ export class HistoryTopicPractice {
     questionId,
     userId,
   }: {
-    given: string;
+    given: HistoryQuestionAnswer;
     questionId: number;
     userId: number;
   }): Promise<void> {

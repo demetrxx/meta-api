@@ -64,7 +64,7 @@ model HistoryQuestion {
   correct Json
 
   topicId      Int
-  topic        HistoryTopic     @relation(fields: [topicId], references: [id])
+  topic        HistoryTopic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
   keyWords     HistoryKeyWord[]
   solution     String?
   whereToLearn String[]

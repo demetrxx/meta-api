@@ -1,5 +1,11 @@
 import { type Prisma } from '@prisma/client';
 import { type FastifyInstance } from 'fastify';
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    historyContent: HistoryContent;
+  }
+}
 export class HistoryContent {
   db: FastifyInstance['prisma'];
 
@@ -18,12 +24,39 @@ export class HistoryContent {
     await this.db.historyTopic.update({ where: { id: topicId }, data: { name, order } });
   }
 
+  async getQuestionById(questionId: number): Promise<void> {
+    await this.db.historyQuestion.findUnique({ where: { id: questionId } });
+  }
+
+  async getQuestionsByTopic(topicId: number): Promise<
+    Array<{
+      id: number;
+      topicId: number;
+      type: string;
+      name: string;
+    }>
+  > {
+    return await this.db.historyQuestion.findMany({
+      where: { topicId },
+      select: {
+        id: true,
+        topicId: true,
+        type: true,
+        name: true,
+      },
+    });
+  }
+
   async createQuestion(data: Prisma.HistoryQuestionCreateInput): Promise<void> {
     await this.db.historyQuestion.create({ data });
   }
 
   async updateQuestion(questionId: number, data: Prisma.HistoryQuestionUpdateInput): Promise<void> {
     await this.db.historyQuestion.update({ where: { id: questionId }, data });
+  }
+
+  async deleteQuestion(questionId: number): Promise<void> {
+    await this.db.historyQuestion.delete({ where: { id: questionId } });
   }
 
   async createTicket(data: Prisma.HistoryTicketCreateInput): Promise<void> {
