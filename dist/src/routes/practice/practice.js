@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.practice = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const HistoryTopicPractice_1 = require("@/model/history/model/practice/HistoryTopicPractice");
+const HistoryTopicPractice_1 = require("@/modules/history/modules/practice/HistoryTopicPractice");
 const params = typebox_1.Type.Object({
     topicId: typebox_1.Type.String(),
 });

@@ -1,9 +1,9 @@
 import { type Static, Type } from '@sinclair/typebox';
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
 
-import { TBHistoryQuestionInput } from '@/shared/typebox/question';
+import { TBHistoryTopicInput } from '@/shared/typebox/topic';
 
-const body = TBHistoryQuestionInput;
+const body = TBHistoryTopicInput;
 
 const response = { '2xx': Type.Object({ id: Type.Number() }) };
 
@@ -14,12 +14,8 @@ interface T extends RouteGenericInterface {
 }
 
 export async function create(fastify: FastifyInstance): Promise<void> {
-  fastify.post<T>('/questions', { schema }, async (req, res) => {
-    const result = await fastify.historyContent.createQuestion({
-      ...req.body,
-      topic: { connect: { id: req.body.topicId } },
-      keyWords: { connect: req.body.keyWords },
-    });
+  fastify.post<T>('/topics', { schema }, async (req, res) => {
+    const result = await fastify.historyContent.createTopic(req.body);
 
     res.status(201);
 

@@ -1,17 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.questions = void 0;
+exports.create = void 0;
+const typebox_1 = require("@sinclair/typebox");
 const question_1 = require("@/shared/typebox/question");
 const body = question_1.TBHistoryQuestionInput;
-const schema = { body };
-async function questions(fastify) {
+const response = { '2xx': typebox_1.Type.Object({ id: typebox_1.Type.Number() }) };
+const schema = { body, response };
+async function create(fastify) {
     fastify.post('/question', { schema }, async (req, res) => {
-        await fastify.historyContent.createQuestion({
+        const result = await fastify.historyContent.createQuestion({
             ...req.body,
             topic: { connect: { id: req.body.topicId } },
             keyWords: { connect: req.body.keyWords },
         });
-        return await res.status(201).send();
+        res.status(201);
+        return result;
     });
 }
-exports.questions = questions;
+exports.create = create;

@@ -27,10 +27,14 @@ class HistoryContent {
         });
     }
     async createQuestion(data) {
-        await this.db.historyQuestion.create({ data });
+        return await this.db.historyQuestion.create({ data, select: { id: true } });
     }
     async updateQuestion(questionId, data) {
-        await this.db.historyQuestion.update({ where: { id: questionId }, data });
+        return await this.db.historyQuestion.update({
+            where: { id: questionId },
+            data,
+            select: { id: true },
+        });
     }
     async deleteQuestion(questionId) {
         await this.db.historyQuestion.delete({ where: { id: questionId } });

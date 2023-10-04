@@ -1,6 +1,6 @@
 import { type FastifyInstance } from 'fastify';
 
-import { HistoryTopicPractice } from '@/model/history';
+import { HistoryTopicPractice } from '@/modules/history';
 import { loadRoutes } from '@/shared/system';
 
 import { getQuestions } from './getQuestions/getQuestions';

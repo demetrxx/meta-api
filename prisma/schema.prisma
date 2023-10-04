@@ -77,10 +77,10 @@ model HistoryQuestion {
 }
 
 model HistoryTopic {
-  id    Int    @id @default(autoincrement())
-  name  String @db.VarChar(255)
-  desc  String
-  order Int    @unique
+  id    Int     @id @default(autoincrement())
+  name  String  @db.VarChar(255)
+  desc  String?
+  order Int     @unique
 
   questions  HistoryQuestion[]
   keyWords   HistoryKeyWord[]
@@ -97,6 +97,7 @@ model HistoryKeyWord {
 
 model HistoryTicket {
   id           Int                  @id @default(autoincrement())
+  meta         Json
   questions    HistoryQuestion[]
   realSessions HistoryRealSession[]
 }

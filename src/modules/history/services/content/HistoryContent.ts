@@ -1,11 +1,14 @@
-import { type Prisma } from '@prisma/client';
+import { type HistoryTicket, type HistoryTopic, type Prisma } from '@prisma/client';
 import { type FastifyInstance } from 'fastify';
+
+import { type IdObject } from '@/shared/types/IdObject';
 
 declare module 'fastify' {
   interface FastifyInstance {
     historyContent: HistoryContent;
   }
 }
+
 export class HistoryContent {
   db: FastifyInstance['prisma'];
 
@@ -13,8 +16,12 @@ export class HistoryContent {
     this.db = app.prisma;
   }
 
-  async createTopic(data: Prisma.HistoryTopicCreateInput): Promise<void> {
-    await this.db.historyTopic.create({ data });
+  async getAllTopics(): Promise<HistoryTopic[]> {
+    return await this.db.historyTopic.findMany();
+  }
+
+  async createTopic(data: Prisma.HistoryTopicCreateInput): Promise<IdObject> {
+    return await this.db.historyTopic.create({ data, select: { id: true } });
   }
 
   async updateTopic(
@@ -22,6 +29,10 @@ export class HistoryContent {
     { name, order }: Prisma.HistoryTopicUpdateInput,
   ): Promise<void> {
     await this.db.historyTopic.update({ where: { id: topicId }, data: { name, order } });
+  }
+
+  async deleteTopic(topicId: number): Promise<void> {
+    await this.db.historyTopic.delete({ where: { id: topicId } });
   }
 
   async getQuestionById(questionId: number): Promise<void> {
@@ -47,14 +58,14 @@ export class HistoryContent {
     });
   }
 
-  async createQuestion(data: Prisma.HistoryQuestionCreateInput): Promise<{ id: number }> {
+  async createQuestion(data: Prisma.HistoryQuestionCreateInput): Promise<IdObject> {
     return await this.db.historyQuestion.create({ data, select: { id: true } });
   }
 
   async updateQuestion(
     questionId: number,
     data: Prisma.HistoryQuestionUpdateInput,
-  ): Promise<{ id: number }> {
+  ): Promise<IdObject> {
     return await this.db.historyQuestion.update({
       where: { id: questionId },
       data,
@@ -66,11 +77,19 @@ export class HistoryContent {
     await this.db.historyQuestion.delete({ where: { id: questionId } });
   }
 
-  async createTicket(data: Prisma.HistoryTicketCreateInput): Promise<void> {
-    await this.db.historyTicket.create({ data });
+  async getAllTickets(): Promise<HistoryTicket[]> {
+    return await this.db.historyTicket.findMany();
+  }
+
+  async createTicket(data: Prisma.HistoryTicketCreateInput): Promise<IdObject> {
+    return await this.db.historyTicket.create({ data, select: { id: true } });
   }
 
   async updateTicket(ticketId: number, data: Prisma.HistoryTicketUpdateInput): Promise<void> {
     await this.db.historyTicket.update({ where: { id: ticketId }, data });
+  }
+
+  async deleteTicket(id: number): Promise<void> {
+    await this.db.historyTicket.delete({ where: { id } });
   }
 }
