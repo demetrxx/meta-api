@@ -47,12 +47,19 @@ export class HistoryContent {
     });
   }
 
-  async createQuestion(data: Prisma.HistoryQuestionCreateInput): Promise<void> {
-    await this.db.historyQuestion.create({ data });
+  async createQuestion(data: Prisma.HistoryQuestionCreateInput): Promise<{ id: number }> {
+    return await this.db.historyQuestion.create({ data, select: { id: true } });
   }
 
-  async updateQuestion(questionId: number, data: Prisma.HistoryQuestionUpdateInput): Promise<void> {
-    await this.db.historyQuestion.update({ where: { id: questionId }, data });
+  async updateQuestion(
+    questionId: number,
+    data: Prisma.HistoryQuestionUpdateInput,
+  ): Promise<{ id: number }> {
+    return await this.db.historyQuestion.update({
+      where: { id: questionId },
+      data,
+      select: { id: true },
+    });
   }
 
   async deleteQuestion(questionId: number): Promise<void> {
