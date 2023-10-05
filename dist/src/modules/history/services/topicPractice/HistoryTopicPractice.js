@@ -103,12 +103,12 @@ class HistoryTopicPractice {
     async updateTotalProgress({ profileId }) {
         const profile = await this.db.historyProfile.findUnique({
             where: { id: profileId },
-            select: { progresses: { select: { value: true } }, progressRealSession: true },
+            select: { progresses: { select: { value: true } }, progressSession: true },
         });
         if (!profile) {
             throw new http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidProfileId);
         }
-        const { progresses, progressRealSession } = profile;
+        const { progresses, progressSession } = profile;
         if (progresses.length !== common_1.HISTORY_THEMES_COUNT) {
             throw new http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidThemeProgressesCount);
         }
@@ -117,7 +117,7 @@ class HistoryTopicPractice {
             return acc;
         }, 0);
         const progressTopics = Math.round(sum / common_1.HISTORY_THEMES_COUNT);
-        const progressTotal = progressTopics + progressRealSession / 2;
+        const progressTotal = progressTopics + progressSession / 2;
         await this.db.historyProfile.update({
             where: { id: profileId },
             data: { progressTopics, progressTotal },

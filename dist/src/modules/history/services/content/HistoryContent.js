@@ -19,7 +19,7 @@ class HistoryContent {
         await this.db.historyTopic.delete({ where: { id: topicId } });
     }
     async getQuestionById(questionId) {
-        await this.db.historyQuestion.findUnique({ where: { id: questionId } });
+        return await this.db.historyQuestion.findUnique({ where: { id: questionId } });
     }
     async getQuestionsByTopic(topicId) {
         return await this.db.historyQuestion.findMany({
@@ -56,6 +56,18 @@ class HistoryContent {
     }
     async deleteTicket(id) {
         await this.db.historyTicket.delete({ where: { id } });
+    }
+    async getKeyWordsByTopic(topicId) {
+        return await this.db.historyKeyWord.findMany({ where: { topicId } });
+    }
+    async createKeyWord(data) {
+        return await this.db.historyKeyWord.create({ data, select: { id: true } });
+    }
+    async updateKeyWord(id, data) {
+        await this.db.historyKeyWord.update({ where: { id }, data });
+    }
+    async deleteKeyWord(id) {
+        await this.db.historyKeyWord.delete({ where: { id } });
     }
 }
 exports.HistoryContent = HistoryContent;

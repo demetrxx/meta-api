@@ -95,11 +95,19 @@ model HistoryKeyWord {
   questions HistoryQuestion[]
 }
 
+enum SessionType {
+  MAIN
+  ADDITIONAL
+  TEST
+}
+
 model HistoryTicket {
-  id           Int                  @id @default(autoincrement())
-  meta         Json
+  id           Int               @id @default(autoincrement())
+  year         Int
+  type         SessionType
   questions    HistoryQuestion[]
-  realSessions HistoryRealSession[]
+  sessions     HistorySession[]
+  profilesSeen HistoryProfile[]
 }
 
 // Progress
@@ -111,17 +119,21 @@ model HistoryProfile {
   answered HistoryQuestion[] @relation("profilesAnswered")
   failed   HistoryQuestion[] @relation("profilesFailed")
 
-  progressTotal       Int @default(0)
-  progressTopics      Int @default(0)
-  progressRealSession Int @default(0)
+  ticketsSeen HistoryTicket[]
+
+  progressTotal   Int @default(0)
+  progressTopics  Int @default(0)
+  progressSession Int @default(0)
 
   timeAvarage Int?
 
   userId Int  @unique
   user   User @relation(fields: [userId], references: [id])
 
-  progresses   HistoryProgress[]
-  realSessions HistoryRealSession[]
+  activeSessionId Int?              @unique
+  activeSession   HistorySession?   @relation(fields: [activeSessionId], references: [id])
+  progresses      HistoryProgress[]
+  sessions        HistorySession[]  @relation("profileSessions")
 }
 
 model HistoryProgress {
@@ -136,16 +148,18 @@ model HistoryProgress {
   @@id([topicId, profileId])
 }
 
-model HistoryRealSession {
-  id      Int     @id @default(autoincrement())
-  done    Boolean @default(false)
-  time    Int
-  score   Int?
-  answers Json
+model HistorySession {
+  id         Int      @id @default(autoincrement())
+  done       Boolean  @default(false)
+  lastViewed DateTime @default(now())
+  timePassed Int      @default(0)
+  score      Int?
+  answers    Json
 
   ticketId Int
   ticket   HistoryTicket @relation(references: [id], fields: [ticketId])
 
-  profileId Int
-  profile   HistoryProfile @relation(references: [id], fields: [profileId])
+  profileId     Int
+  profile       HistoryProfile  @relation("profileSessions", references: [id], fields: [profileId])
+  activeProfile HistoryProfile?
 }
