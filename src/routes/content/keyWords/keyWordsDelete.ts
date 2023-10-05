@@ -14,9 +14,9 @@ interface T extends RouteGenericInterface {
   Params: Static<typeof params>;
 }
 
-export async function deleteById(fastify: FastifyInstance): Promise<void> {
-  fastify.delete<T>('/questions/:id', { schema }, async (req, res) => {
-    await fastify.historyContent.deleteQuestion(Number(req.params.id));
-    res.status(200);
+export async function keyWordsDelete(fastify: FastifyInstance): Promise<void> {
+  fastify.delete<T>('/keywords/:id', { schema }, async (req, res) => {
+    await fastify.historyContent.deleteKeyWord(Number(req.params.id));
+    res.status(200).send();
   });
 }

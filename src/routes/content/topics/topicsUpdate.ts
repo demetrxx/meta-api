@@ -1,7 +1,7 @@
 import { type Static, Type } from '@sinclair/typebox';
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
 
-import { TBHistoryTopicInput } from '@/shared/typebox/topic';
+import { TBHistoryTopicInput } from '@/modules/history/typebox/topic';
 
 const params = Type.Object({
   id: Type.String(),
@@ -20,7 +20,7 @@ interface T extends RouteGenericInterface {
   Params: Static<typeof params>;
 }
 
-export async function update(fastify: FastifyInstance): Promise<void> {
+export async function topicsUpdate(fastify: FastifyInstance): Promise<void> {
   fastify.patch<T>('/topics/:id', { schema }, async (req) => {
     await fastify.historyContent.updateTopic(Number(req.params.id), req.body);
 

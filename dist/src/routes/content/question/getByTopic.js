@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getByTopic = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const question_1 = require("@/shared/typebox/question");
+const question_1 = require("@/shared/typebox/questions");
 const querystring = typebox_1.Type.Object({
     topicId: typebox_1.Type.String(),
 });

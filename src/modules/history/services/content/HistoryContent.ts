@@ -1,4 +1,10 @@
-import { type HistoryTicket, type HistoryTopic, type Prisma } from '@prisma/client';
+import {
+  type HistoryKeyWord,
+  type HistoryQuestion,
+  type HistoryTicket,
+  type HistoryTopic,
+  type Prisma,
+} from '@prisma/client';
 import { type FastifyInstance } from 'fastify';
 
 import { type IdObject } from '@/shared/types/IdObject';
@@ -35,8 +41,8 @@ export class HistoryContent {
     await this.db.historyTopic.delete({ where: { id: topicId } });
   }
 
-  async getQuestionById(questionId: number): Promise<void> {
-    await this.db.historyQuestion.findUnique({ where: { id: questionId } });
+  async getQuestionById(questionId: number): Promise<HistoryQuestion | null> {
+    return await this.db.historyQuestion.findUnique({ where: { id: questionId } });
   }
 
   async getQuestionsByTopic(topicId: number): Promise<
@@ -91,5 +97,21 @@ export class HistoryContent {
 
   async deleteTicket(id: number): Promise<void> {
     await this.db.historyTicket.delete({ where: { id } });
+  }
+
+  async getKeyWordsByTopic(topicId: number): Promise<HistoryKeyWord[]> {
+    return await this.db.historyKeyWord.findMany({ where: { topicId } });
+  }
+
+  async createKeyWord(data: Prisma.HistoryKeyWordCreateInput): Promise<IdObject> {
+    return await this.db.historyKeyWord.create({ data, select: { id: true } });
+  }
+
+  async updateKeyWord(id: number, data: Prisma.HistoryKeyWordUpdateInput): Promise<void> {
+    await this.db.historyKeyWord.update({ where: { id }, data });
+  }
+
+  async deleteKeyWord(id: number): Promise<void> {
+    await this.db.historyKeyWord.delete({ where: { id } });
   }
 }

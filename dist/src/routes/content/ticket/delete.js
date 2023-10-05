@@ -10,8 +10,8 @@ const schema = {
     response: { '2xx': typebox_1.Type.Object({ id: typebox_1.Type.Number() }) },
 };
 async function deleteById(fastify) {
-    fastify.delete('/questions/:id', { schema }, async (req, res) => {
-        await fastify.historyContent.deleteQuestion(Number(req.params.id));
+    fastify.delete('/tickets/:id', { schema }, async (req, res) => {
+        await fastify.historyContent.deleteTicket(Number(req.params.id));
         res.status(200);
     });
 }

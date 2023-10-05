@@ -1,13 +1,13 @@
 import { type Static, Type } from '@sinclair/typebox';
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
 
-import { TBHistoryTicketInput } from '@/shared/typebox/ticket';
+import { TBHistoryKeyWordInput } from '@/modules/history/typebox/keyWord';
 
 const params = Type.Object({
   id: Type.String(),
 });
 
-const body = Type.Partial(TBHistoryTicketInput);
+const body = Type.Partial(TBHistoryKeyWordInput);
 
 const schema: FastifySchema = {
   body,
@@ -20,13 +20,9 @@ interface T extends RouteGenericInterface {
   Params: Static<typeof params>;
 }
 
-export async function update(fastify: FastifyInstance): Promise<void> {
-  fastify.patch<T>('/tickets/:id', { schema }, async (req) => {
-    await fastify.historyContent.updateTicket(Number(req.params.id), {
-      ...req.body,
-      questions: { set: req.body.questions },
-    });
-
+export async function keyWordsUpdate(fastify: FastifyInstance): Promise<void> {
+  fastify.patch<T>('/keywords/:id', { schema }, async (req) => {
+    await fastify.historyContent.updateKeyWord(Number(req.params.id), req.body);
     return { id: Number(req.params.id) };
   });
 }

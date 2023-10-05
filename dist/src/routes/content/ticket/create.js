@@ -2,16 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.create = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const question_1 = require("@/shared/typebox/questions");
-const body = question_1.TBHistoryQuestionInput;
+const ticket_1 = require("@/shared/typebox/tickets");
+const body = ticket_1.TBHistoryTicketInput;
 const response = { '2xx': typebox_1.Type.Object({ id: typebox_1.Type.Number() }) };
 const schema = { body, response };
 async function create(fastify) {
-    fastify.post('/questions', { schema }, async (req, res) => {
-        const result = await fastify.historyContent.createQuestion({
+    fastify.post('/tickets', { schema }, async (req, res) => {
+        const result = await fastify.historyContent.createTicket({
             ...req.body,
-            topic: { connect: { id: req.body.topicId } },
-            keyWords: { connect: req.body.keyWords },
+            questions: { connect: req.body.questions },
         });
         res.status(201);
         return result;

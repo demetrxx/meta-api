@@ -1,7 +1,7 @@
 import { type Static, Type } from '@sinclair/typebox';
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
 
-import { TBHistoryQuestionOutput } from '@/shared/typebox/question';
+import { TBHistoryQuestionOutput } from '@/modules/history/typebox/question';
 
 const params = Type.Object({
   id: Type.String(),
@@ -13,9 +13,8 @@ interface T extends RouteGenericInterface {
   Params: Static<typeof params>;
 }
 
-export async function getById(fastify: FastifyInstance): Promise<void> {
+export async function questionsGetById(fastify: FastifyInstance): Promise<void> {
   fastify.get<T>('/questions/:id', { schema }, async (req, res) => {
-    const question = await fastify.historyContent.getQuestionsByTopic(Number(req.params.id));
-    return JSON.stringify(question);
+    return await fastify.historyContent.getQuestionById(Number(req.params.id));
   });
 }
