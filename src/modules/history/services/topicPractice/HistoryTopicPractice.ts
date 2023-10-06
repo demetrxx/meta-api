@@ -16,6 +16,8 @@ declare module 'fastify' {
   }
 }
 
+export const HISTORY_QUESTIONS_COUNT = 10;
+
 export class HistoryTopicPractice {
   private readonly db: FastifyInstance['prisma'];
 
@@ -70,15 +72,13 @@ export class HistoryTopicPractice {
     topicId: number;
     userId: number;
   }): Promise<HistoryQuestion[]> {
-    const QS_NUM = 10;
-
     const profile = await this.db.historyProfile.findUnique({
       where: { userId },
       select: { seen: { select: { id: true } }, failed: { select: { id: true } } },
     });
 
     if (!profile) {
-      throw errors.InternalServerError('History profile not found.');
+      throw errors.InternalServerError(errMsg.invalidUserId);
     }
 
     const questions: HistoryQuestion[] = [];
@@ -89,30 +89,30 @@ export class HistoryTopicPractice {
         topic: { id: topicId },
         id: { notIn: getIdsArr(profile.seen) },
       },
-      take: QS_NUM,
+      take: HISTORY_QUESTIONS_COUNT,
     });
     questions.push(...unseenQs);
 
     // Seen all, get failed ones
-    if (questions.length < QS_NUM) {
+    if (questions.length < HISTORY_QUESTIONS_COUNT) {
       const failedQs = await this.db.historyQuestion.findMany({
         where: {
           topic: { id: topicId },
           id: { in: getIdsArr(profile.failed) },
         },
-        take: QS_NUM - questions.length,
+        take: HISTORY_QUESTIONS_COUNT - questions.length,
       });
       questions.push(...failedQs);
     }
 
     // We've got a champ out here, reset seen qs
-    if (questions.length < QS_NUM) {
+    if (questions.length < HISTORY_QUESTIONS_COUNT) {
       const extraQs = await this.db.historyQuestion.findMany({
         where: {
           topic: { id: topicId },
           id: { notIn: getIdsArr(profile.failed) },
         },
-        take: QS_NUM - questions.length,
+        take: HISTORY_QUESTIONS_COUNT - questions.length,
       });
       extraQs.push(...extraQs);
 
@@ -170,7 +170,7 @@ export class HistoryTopicPractice {
     }, 0);
 
     const progressTopics = Math.round(sum / HISTORY_THEMES_COUNT);
-    const progressTotal = progressTopics + progressSession / 2;
+    const progressTotal = (progressTopics + progressSession) / 2;
 
     await this.db.historyProfile.update({
       where: { id: profileId },

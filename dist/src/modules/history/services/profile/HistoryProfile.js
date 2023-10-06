@@ -14,7 +14,7 @@ class HistoryProfile {
                 userId,
                 progressTotal: 0,
                 progressTopics: 0,
-                progressRealSession: 0,
+                progressSession: 0,
                 progresses: {
                     createMany: { data: progresses },
                 },

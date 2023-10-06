@@ -95,7 +95,7 @@ model HistoryKeyWord {
   questions HistoryQuestion[]
 }
 
-enum SessionType {
+enum TicketType {
   MAIN
   ADDITIONAL
   TEST
@@ -104,7 +104,7 @@ enum SessionType {
 model HistoryTicket {
   id           Int               @id @default(autoincrement())
   year         Int
-  type         SessionType
+  type         TicketType
   questions    HistoryQuestion[]
   sessions     HistorySession[]
   profilesSeen HistoryProfile[]
@@ -131,7 +131,7 @@ model HistoryProfile {
   user   User @relation(fields: [userId], references: [id])
 
   activeSessionId Int?              @unique
-  activeSession   HistorySession?   @relation(fields: [activeSessionId], references: [id])
+  activeSession   HistorySession?   @relation(fields: [activeSessionId], references: [id], onDelete: SetNull)
   progresses      HistoryProgress[]
   sessions        HistorySession[]  @relation("profileSessions")
 }
