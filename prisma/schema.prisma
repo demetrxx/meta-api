@@ -154,6 +154,7 @@ model HistorySession {
   lastViewed DateTime @default(now())
   timePassed Int      @default(0)
   score      Int?
+  rate       Int?
   answers    Json
 
   ticketId Int

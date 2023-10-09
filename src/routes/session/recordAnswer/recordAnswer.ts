@@ -1,10 +1,7 @@
 import { type Static, Type } from '@sinclair/typebox';
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
 
-const body = Type.Object({
-  questionId: Type.Number(),
-  given: Type.Union([Type.Array(Type.String()), Type.String()]),
-});
+const body = Type.Record(Type.Number(), Type.Union([Type.Array(Type.String()), Type.String()]));
 
 const schema: FastifySchema = { body };
 
@@ -13,15 +10,10 @@ interface T extends RouteGenericInterface {
 }
 
 export async function recordAnswer(fastify: FastifyInstance): Promise<void> {
-  fastify.post<T>('/practice', { schema }, async (req, res) => {
-    const { questionId, given } = req.body;
-
-    await fastify.historyTopicPractice.recordAnswer({
-      given,
-      questionId,
+  fastify.patch<T>('/', { schema }, async (req) => {
+    return await fastify.historySession.recordAnswer({
       userId: fastify.user.id,
+      answers: req.body,
     });
-
-    return { questionId };
   });
 }

@@ -3,13 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HistoryTopicPractice = void 0;
+exports.HistoryTopicPractice = exports.HISTORY_QUESTIONS_COUNT = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
 const lib_1 = require("@/lib");
 const errMsg_1 = require("@/shared/consts/errMsg");
 const lib_2 = require("@/shared/lib");
 const common_1 = require("../../consts/common");
 const lib_3 = require("../../lib");
+exports.HISTORY_QUESTIONS_COUNT = 10;
 class HistoryTopicPractice {
     db;
     constructor(app) {
@@ -42,13 +43,12 @@ class HistoryTopicPractice {
         });
     }
     async getQuestions({ topicId, userId, }) {
-        const QS_NUM = 10;
         const profile = await this.db.historyProfile.findUnique({
             where: { userId },
             select: { seen: { select: { id: true } }, failed: { select: { id: true } } },
         });
         if (!profile) {
-            throw http_errors_1.default.InternalServerError('History profile not found.');
+            throw http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidUserId);
         }
         const questions = [];
         // Get unseen
@@ -57,28 +57,28 @@ class HistoryTopicPractice {
                 topic: { id: topicId },
                 id: { notIn: (0, lib_2.getIdsArr)(profile.seen) },
             },
-            take: QS_NUM,
+            take: exports.HISTORY_QUESTIONS_COUNT,
         });
         questions.push(...unseenQs);
         // Seen all, get failed ones
-        if (questions.length < QS_NUM) {
+        if (questions.length < exports.HISTORY_QUESTIONS_COUNT) {
             const failedQs = await this.db.historyQuestion.findMany({
                 where: {
                     topic: { id: topicId },
                     id: { in: (0, lib_2.getIdsArr)(profile.failed) },
                 },
-                take: QS_NUM - questions.length,
+                take: exports.HISTORY_QUESTIONS_COUNT - questions.length,
             });
             questions.push(...failedQs);
         }
         // We've got a champ out here, reset seen qs
-        if (questions.length < QS_NUM) {
+        if (questions.length < exports.HISTORY_QUESTIONS_COUNT) {
             const extraQs = await this.db.historyQuestion.findMany({
                 where: {
                     topic: { id: topicId },
                     id: { notIn: (0, lib_2.getIdsArr)(profile.failed) },
                 },
-                take: QS_NUM - questions.length,
+                take: exports.HISTORY_QUESTIONS_COUNT - questions.length,
             });
             extraQs.push(...extraQs);
             await this.db.historyProfile.update({
@@ -117,7 +117,7 @@ class HistoryTopicPractice {
             return acc;
         }, 0);
         const progressTopics = Math.round(sum / common_1.HISTORY_THEMES_COUNT);
-        const progressTotal = progressTopics + progressSession / 2;
+        const progressTotal = (progressTopics + progressSession) / 2;
         await this.db.historyProfile.update({
             where: { id: profileId },
             data: { progressTopics, progressTotal },

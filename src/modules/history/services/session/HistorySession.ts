@@ -1,11 +1,14 @@
-import { type HistorySession } from '@prisma/client';
+import { type HistoryQuestion, type HistorySession } from '@prisma/client';
 import { type FastifyInstance } from 'fastify';
 import errors from 'http-errors';
 
-import { calcTimePassed, getSessionProgress } from '@/lib';
-import { getTicketScore } from '@/modules/history/lib/getTicketScore/getTicketScore';
+import { calcTimePassed } from '@/lib';
+import { getHistorySessionAnalytics } from '@/modules/history/lib/getHistorySessionAnalytics/getHistorySessionAnalytics';
+import { getHistorySessionProgress } from '@/modules/history/lib/getHistorySessionProgress/getHistorySessionProgress';
 import { type HistorySessionAnswers } from '@/modules/history/types/session';
 import { errMsg } from '@/shared/consts/errMsg';
+import { toIdsObjArr } from '@/shared/lib';
+import { type IdObject } from '@/shared/types/IdObject';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -77,7 +80,7 @@ export class HistorySessionService {
   }: {
     userId: number;
     answers: HistorySessionAnswers;
-  }): Promise<void> {
+  }): Promise<IdObject> {
     const activeSession = await this.getActive({ userId });
 
     const timePassed = calcTimePassed({
@@ -85,54 +88,73 @@ export class HistorySessionService {
       lastViewed: activeSession.lastViewed,
     });
 
-    await this.db.historySession.update({
+    return await this.db.historySession.update({
       where: { id: activeSession.id },
       data: {
         timePassed,
         answers: { set: answers },
-        lastViewed: new Date(),
       },
+      select: { id: true },
     });
   }
 
-  async getActive({ userId }: { userId: number }): Promise<HistorySession> {
+  async getActive({
+    userId,
+  }: {
+    userId: number;
+  }): Promise<HistorySession & { ticket: { questions: HistoryQuestion[] } }> {
     const { activeSession } = await this.db.historyProfile.findUniqueOrThrow({
       where: { userId },
-      select: { activeSession: true },
+      select: { activeSession: { include: { ticket: { include: { questions: true } } } } },
     });
 
     if (!activeSession) {
-      throw new errors.InternalServerError(errMsg.noActiveSession);
+      throw new errors.BadRequest(errMsg.noActiveSession);
     }
+
+    await this.db.historySession.update({
+      where: { id: activeSession.id },
+      data: { lastViewed: new Date() },
+    });
 
     return activeSession;
   }
 
-  async finish({ userId }: { userId: number }): Promise<void> {
+  async finish({ userId }: { userId: number }): Promise<HistorySession> {
     const activeSession = await this.getActive({ userId });
 
     const timePassed = calcTimePassed({
       prevTimePassed: activeSession.timePassed,
       lastViewed: activeSession.lastViewed,
     });
-    const score = getTicketScore(activeSession.answers as HistorySessionAnswers);
 
-    const {
-      profile: { progressTopics },
-    } = await this.db.historySession.update({
+    const { score, failed, rate, answered } = getHistorySessionAnalytics(
+      activeSession.ticket.questions,
+      activeSession.answers as HistorySessionAnswers,
+    );
+
+    const session = await this.db.historySession.update({
       where: { id: activeSession.id },
       data: {
         score,
+        rate,
         timePassed,
         done: true,
         lastViewed: new Date(),
       },
-      select: {
+      include: {
         profile: { select: { progressTopics: true } },
       },
     });
 
-    const progressSession = getSessionProgress();
+    const { progressTopics } = session.profile;
+
+    const completeSessions = await this.db.historySession.findMany({
+      where: { profileId: session.profileId, done: true },
+      orderBy: { lastViewed: 'desc' },
+    });
+
+    const progressSession = getHistorySessionProgress(completeSessions);
     const progressTotal = (progressTopics + progressSession) / 2;
 
     await this.db.historyProfile.update({
@@ -140,19 +162,24 @@ export class HistorySessionService {
       data: {
         progressTotal,
         progressSession,
+        seen: { connect: activeSession.ticket.questions.map(({ id }) => ({ id })) },
+        answered: { connect: toIdsObjArr(answered) },
+        failed: { connect: toIdsObjArr(failed) },
         activeSession: { disconnect: true },
       },
     });
+
+    return session;
   }
 
   async getById(id: number, { userId }: { userId: number }): Promise<HistorySession> {
     const session = await this.db.historySession.findUnique({
-      where: { id },
+      where: { id, done: false },
       include: { profile: { select: { userId: true } } },
     });
 
     if (!session) {
-      throw new errors.InternalServerError(errMsg.invalidSessionId);
+      throw new errors.BadRequest(errMsg.invalidSessionId);
     }
 
     if (session.profile.userId !== userId) {
