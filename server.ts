@@ -1,5 +1,5 @@
-import { buildServer } from './src/main';
 import { configMap, envSchema } from './config';
+import { buildServer } from './src/main';
 
 (async () => {
   const config = configMap[envSchema.NODE_ENV];

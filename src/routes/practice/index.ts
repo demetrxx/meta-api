@@ -9,5 +9,5 @@ import { recordAnswer } from './recordAnswer/recordAnswer';
 export const practiceRoutes = loadRoutes(
   [getQuestions, recordAnswer],
   { prefix: '/practice' },
-  { historyTopicPracticeService: (fastify: FastifyInstance) => new HistoryTopicPractice(fastify) },
+  { historyTopicPractice: (fastify: FastifyInstance) => new HistoryTopicPractice(fastify) },
 );

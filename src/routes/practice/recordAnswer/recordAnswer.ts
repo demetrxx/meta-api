@@ -3,7 +3,7 @@ import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } 
 
 const body = Type.Object({
   questionId: Type.Number(),
-  given: Type.Union([Type.Array(Type.String()), Type.String()]),
+  given: Type.Array(Type.Number()),
 });
 
 const schema: FastifySchema = { body };
@@ -13,13 +13,13 @@ interface T extends RouteGenericInterface {
 }
 
 export async function recordAnswer(fastify: FastifyInstance): Promise<void> {
-  fastify.post<T>('/practice', { schema }, async (req, res) => {
+  fastify.post<T>('/', { schema }, async (req, res) => {
     const { questionId, given } = req.body;
 
     await fastify.historyTopicPractice.recordAnswer({
       given,
       questionId,
-      userId: fastify.user.id,
+      userId: req.user.id,
     });
 
     return { questionId };

@@ -12,9 +12,9 @@ interface T extends RouteGenericInterface {
 }
 
 export async function getQuestions(fastify: FastifyInstance): Promise<void> {
-  fastify.get<T>('/practice/:topicId', { schema }, async (req, res) => {
+  fastify.get<T>('/:topicId', { schema }, async (req, res) => {
     return await fastify.historyTopicPractice.getQuestions({
-      userId: fastify.user.id,
+      userId: req.user.id,
       topicId: Number(req.params.topicId),
     });
   });

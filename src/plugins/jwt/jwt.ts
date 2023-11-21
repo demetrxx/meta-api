@@ -33,7 +33,8 @@ export const jwtPlugin: FastifyPluginAsync = fp(async (fastify) => {
   });
 
   fastify.decorate('generateAccessToken', (value) =>
-    fastify.jwt.access.sign(value, { expiresIn: '3d' }),
+    // TODO: expiresIn: '30d' -> 1h
+    fastify.jwt.access.sign(value, { expiresIn: '30d' }),
   );
 
   fastify.decorate('generateRefreshToken', (value) =>

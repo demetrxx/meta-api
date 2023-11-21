@@ -1,13 +1,13 @@
 import { type Static, Type } from '@sinclair/typebox';
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
 
-import { TBHistoryTicketInput } from '@/modules/history/typebox/ticket';
+import { TBHistoryTicketUpdateInput } from '@/modules/history/typebox/ticket';
 
 const params = Type.Object({
   id: Type.String(),
 });
 
-const body = Type.Partial(TBHistoryTicketInput);
+const body = Type.Partial(TBHistoryTicketUpdateInput);
 
 const schema: FastifySchema = {
   body,

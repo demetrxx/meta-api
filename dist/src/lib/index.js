@@ -15,5 +15,4 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./calcTimePassed/calcTimePassed"), exports);
-__exportStar(require("./getSessionProgress/getSessionProgress"), exports);
 __exportStar(require("./getThemeProgress/getThemeProgress"), exports);

@@ -15,7 +15,6 @@ interface T extends RouteGenericInterface {
 
 export async function find(fastify: FastifyInstance): Promise<void> {
   fastify.get<T>('/:id', { schema }, async (req) => {
-    await fastify.historySession.getById(Number(req.params.id), { userId: fastify.user.id });
-    return { id: Number(req.params.id) };
+    return await fastify.historySession.getById(Number(req.params.id), { userId: req.user.id });
   });
 }

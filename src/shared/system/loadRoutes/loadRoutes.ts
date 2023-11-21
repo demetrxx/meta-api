@@ -11,16 +11,13 @@ export const loadRoutes = (
   decorators: Record<string, any> = {},
 ): FastifyPluginAsync =>
   fp(async (fastify) => {
+    for (const name of Object.keys(decorators)) {
+      const decorator = decorators[name];
+
+      fastify.decorate(name, typeof decorator === 'function' ? decorator(fastify) : decorator);
+    }
+
     routes.forEach((route) => {
-      for (const name of Object.keys(decorators)) {
-        const decorator = decorators[name];
-
-        fastify.decorate(
-          decorator,
-          typeof decorator === 'function' ? decorator(fastify) : decorator,
-        );
-      }
-
       fastify.register(route, opts);
     });
   });

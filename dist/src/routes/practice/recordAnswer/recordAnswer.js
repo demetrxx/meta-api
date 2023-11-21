@@ -15,7 +15,7 @@ async function recordAnswer(fastify) {
             questionId,
             userId: fastify.user.id,
         });
-        return JSON.stringify(req.user);
+        return { questionId };
     });
 }
 exports.recordAnswer = recordAnswer;

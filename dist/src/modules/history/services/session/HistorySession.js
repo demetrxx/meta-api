@@ -6,8 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HistorySessionService = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
 const lib_1 = require("@/lib");
-const getTicketScore_1 = require("@/modules/history/lib/getTicketScore/getTicketScore");
+const getHistorySessionAnalytics_1 = require("@/modules/history/lib/getHistorySessionAnalytics/getHistorySessionAnalytics");
+const getHistorySessionProgress_1 = require("@/modules/history/lib/getHistorySessionProgress/getHistorySessionProgress");
 const errMsg_1 = require("@/shared/consts/errMsg");
+const lib_2 = require("@/shared/lib");
 class HistorySessionService {
     db;
     constructor(app) {
@@ -62,23 +64,27 @@ class HistorySessionService {
             prevTimePassed: activeSession.timePassed,
             lastViewed: activeSession.lastViewed,
         });
-        await this.db.historySession.update({
+        return await this.db.historySession.update({
             where: { id: activeSession.id },
             data: {
                 timePassed,
                 answers: { set: answers },
-                lastViewed: new Date(),
             },
+            select: { id: true },
         });
     }
-    async getActive({ userId }) {
+    async getActive({ userId, }) {
         const { activeSession } = await this.db.historyProfile.findUniqueOrThrow({
             where: { userId },
-            select: { activeSession: true },
+            select: { activeSession: { include: { ticket: { include: { questions: true } } } } },
         });
         if (!activeSession) {
-            throw new http_errors_1.default.InternalServerError(errMsg_1.errMsg.noActiveSession);
+            throw new http_errors_1.default.BadRequest(errMsg_1.errMsg.noActiveSession);
         }
+        await this.db.historySession.update({
+            where: { id: activeSession.id },
+            data: { lastViewed: new Date() },
+        });
         return activeSession;
     }
     async finish({ userId }) {
@@ -87,37 +93,47 @@ class HistorySessionService {
             prevTimePassed: activeSession.timePassed,
             lastViewed: activeSession.lastViewed,
         });
-        const score = (0, getTicketScore_1.getTicketScore)(activeSession.answers);
-        const { profile: { progressTopics }, } = await this.db.historySession.update({
+        const { score, failed, rate, answered } = (0, getHistorySessionAnalytics_1.getHistorySessionAnalytics)(activeSession.ticket.questions, activeSession.answers);
+        const session = await this.db.historySession.update({
             where: { id: activeSession.id },
             data: {
                 score,
+                rate,
                 timePassed,
                 done: true,
                 lastViewed: new Date(),
             },
-            select: {
+            include: {
                 profile: { select: { progressTopics: true } },
             },
         });
-        const progressSession = (0, lib_1.getSessionProgress)();
+        const { progressTopics } = session.profile;
+        const completeSessions = await this.db.historySession.findMany({
+            where: { profileId: session.profileId, done: true },
+            orderBy: { lastViewed: 'desc' },
+        });
+        const progressSession = (0, getHistorySessionProgress_1.getHistorySessionProgress)(completeSessions);
         const progressTotal = (progressTopics + progressSession) / 2;
         await this.db.historyProfile.update({
             where: { userId },
             data: {
                 progressTotal,
                 progressSession,
+                seen: { connect: activeSession.ticket.questions.map(({ id }) => ({ id })) },
+                answered: { connect: (0, lib_2.toIdsObjArr)(answered) },
+                failed: { connect: (0, lib_2.toIdsObjArr)(failed) },
                 activeSession: { disconnect: true },
             },
         });
+        return session;
     }
     async getById(id, { userId }) {
         const session = await this.db.historySession.findUnique({
-            where: { id },
+            where: { id, done: false },
             include: { profile: { select: { userId: true } } },
         });
         if (!session) {
-            throw new http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidSessionId);
+            throw new http_errors_1.default.BadRequest(errMsg_1.errMsg.invalidSessionId);
         }
         if (session.profile.userId !== userId) {
             throw new http_errors_1.default.Forbidden();

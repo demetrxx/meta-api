@@ -57,14 +57,12 @@ enum HistoryQuestionType {
 model HistoryQuestion {
   id      Int                 @id @default(autoincrement())
   name    String
-  desc    String?
   type    HistoryQuestionType
-  img     String?
   options Json
   correct Json
+  order   Int?
 
-  topicId      Int
-  topic        HistoryTopic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  topics       HistoryTopic[]
   keyWords     HistoryKeyWord[]
   solution     String?
   whereToLearn String[]
@@ -73,7 +71,8 @@ model HistoryQuestion {
   profilesSeen     HistoryProfile[] @relation("profilesSeen")
   profilesAnswered HistoryProfile[] @relation("profilesAnswered")
   profilesFailed   HistoryProfile[] @relation("profilesFailed")
-  tickets          HistoryTicket[]
+  ticketId         Int?
+  ticket           HistoryTicket?   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 }
 
 model HistoryTopic {
@@ -99,6 +98,9 @@ enum TicketType {
   MAIN
   ADDITIONAL
   TEST
+  FIRST
+  SECOND
+  DEMO
 }
 
 model HistoryTicket {

@@ -1,10 +1,10 @@
 import { Type } from '@sinclair/typebox';
 import { type FastifyInstance, type FastifySchema } from 'fastify';
 
-import { TBHistoryTopicOutput } from '@/modules/history/typebox/topic';
+import { TBHistoryTicketOutput } from '@/modules/history/typebox/ticket';
 
 const schema: FastifySchema = {
-  response: { '2xx': Type.Array(TBHistoryTopicOutput) },
+  response: { '2xx': Type.Array(TBHistoryTicketOutput) },
 };
 
 export async function ticketsGetAll(fastify: FastifyInstance): Promise<void> {

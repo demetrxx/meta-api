@@ -1,6 +1,7 @@
 import { type FastifyInstance } from 'fastify';
 
 import { HistoryContent } from '@/modules/history';
+import { ticketsGetById } from '@/routes/content/tickets/ticketsGetById';
 import { loadRoutes } from '@/shared/system';
 
 import { keyWordsCreate } from './keyWords/keyWordsCreate';
@@ -10,7 +11,7 @@ import { keyWordsUpdate } from './keyWords/keyWordsUpdate';
 import { questionsCreate } from './questions/questionsCreate';
 import { questionsDelete } from './questions/questionsDelete';
 import { questionsGetById } from './questions/questionsGetById';
-import { questionsGetByTopic } from './questions/questionsGetByTopic';
+import { questionsGetMany } from './questions/questionsGetMany';
 import { questionsUpdate } from './questions/questionsUpdate';
 import { ticketsCreate } from './tickets/ticketsCreate';
 import { ticketsDelete } from './tickets/ticketsDelete';
@@ -31,7 +32,7 @@ export const contentRoutes = loadRoutes(
     // questions
     questionsCreate,
     questionsDelete,
-    questionsGetByTopic,
+    questionsGetMany,
     questionsGetById,
     questionsUpdate,
     // topics
@@ -42,6 +43,7 @@ export const contentRoutes = loadRoutes(
     // tickets
     ticketsCreate,
     ticketsGetAll,
+    ticketsGetById,
     ticketsUpdate,
     ticketsDelete,
   ],

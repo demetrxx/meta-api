@@ -34,13 +34,16 @@ export class HistoryTopicPractice {
     questionId: number;
     userId: number;
   }): Promise<void> {
-    const question = await this.db.historyQuestion.findUnique({ where: { id: questionId } });
+    const question = await this.db.historyQuestion.findUnique({
+      where: { id: questionId },
+      include: { topics: { select: { id: true } } },
+    });
 
     if (!question) {
       throw new errors.BadRequest(errMsg.invalidQuestionId);
     }
 
-    const { type, correct, topicId } = question;
+    const { type, correct, topics } = question;
 
     const { isValid } = evalHistoryAnswer({ given, type, correct });
     const answeredOrFailed = isValid ? 'answered' : 'failed';
@@ -57,12 +60,16 @@ export class HistoryTopicPractice {
       },
     });
 
-    await this.updateTopicProgress({
-      topicId,
-      profileId,
-      failedCount: _count.failed,
-      answeredCount: _count.answered,
-    });
+    await Promise.all(
+      topics.map(async ({ id }) => {
+        await this.updateTopicProgress({
+          topicId: id,
+          profileId,
+          failedCount: _count.failed,
+          answeredCount: _count.answered,
+        });
+      }),
+    );
   }
 
   async getQuestions({
@@ -86,18 +93,20 @@ export class HistoryTopicPractice {
     // Get unseen
     const unseenQs = await this.db.historyQuestion.findMany({
       where: {
-        topic: { id: topicId },
+        topics: { some: { id: topicId } },
         id: { notIn: getIdsArr(profile.seen) },
       },
+      include: { topics: { select: { id: true } } },
       take: HISTORY_QUESTIONS_COUNT,
     });
+
     questions.push(...unseenQs);
 
     // Seen all, get failed ones
     if (questions.length < HISTORY_QUESTIONS_COUNT) {
       const failedQs = await this.db.historyQuestion.findMany({
         where: {
-          topic: { id: topicId },
+          topics: { some: { id: topicId } },
           id: { in: getIdsArr(profile.failed) },
         },
         take: HISTORY_QUESTIONS_COUNT - questions.length,
@@ -109,7 +118,7 @@ export class HistoryTopicPractice {
     if (questions.length < HISTORY_QUESTIONS_COUNT) {
       const extraQs = await this.db.historyQuestion.findMany({
         where: {
-          topic: { id: topicId },
+          topics: { some: { id: topicId } },
           id: { notIn: getIdsArr(profile.failed) },
         },
         take: HISTORY_QUESTIONS_COUNT - questions.length,
