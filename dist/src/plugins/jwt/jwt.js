@@ -25,6 +25,8 @@ exports.jwtPlugin = (0, fastify_plugin_1.default)(async (fastify) => {
             reply.send(http_errors_1.default.Forbidden(errMsg_1.errMsg.expiredAccessToken));
         }
     });
-    fastify.decorate('generateAccessToken', (value) => fastify.jwt.access.sign(value, { expiresIn: '3d' }));
+    fastify.decorate('generateAccessToken', (value) => 
+    // TODO: expiresIn: '30d' -> 1h
+    fastify.jwt.access.sign(value, { expiresIn: '30d' }));
     fastify.decorate('generateRefreshToken', (value) => fastify.jwt.refresh.sign(value, { expiresIn: '30d' }));
 });

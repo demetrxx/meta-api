@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ticketsGetAll = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const topic_1 = require("@/modules/history/typebox/topic");
+const ticket_1 = require("@/modules/history/typebox/ticket");
 const schema = {
-    response: { '2xx': typebox_1.Type.Array(topic_1.TBHistoryTopicOutput) },
+    response: { '2xx': typebox_1.Type.Array(ticket_1.TBHistoryTicketOutput) },
 };
 async function ticketsGetAll(fastify) {
     fastify.get('/tickets', { schema }, async () => {

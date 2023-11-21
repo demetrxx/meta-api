@@ -4,7 +4,7 @@ import errors from 'http-errors';
 
 import { getThemeProgress } from '@/lib';
 import { errMsg } from '@/shared/consts/errMsg';
-import { getIdsArr } from '@/shared/lib';
+import { getIdsArr, selectId } from '@/shared/lib';
 
 import { HISTORY_THEMES_COUNT } from '../../consts/common';
 import { evalHistoryAnswer } from '../../lib';
@@ -16,7 +16,7 @@ declare module 'fastify' {
   }
 }
 
-export const HISTORY_QUESTIONS_COUNT = 10;
+export const HISTORY_QUESTIONS_COUNT = 1;
 
 export class HistoryTopicPractice {
   private readonly db: FastifyInstance['prisma'];
@@ -43,16 +43,27 @@ export class HistoryTopicPractice {
       throw new errors.BadRequest(errMsg.invalidQuestionId);
     }
 
+    if (given.length === 0) {
+      // skip question
+      await this.db.historyProfile.update({
+        where: { userId },
+        data: { seen: { connect: { id: questionId } } },
+      });
+      return;
+    }
+
     const { type, correct, topics } = question;
 
     const { isValid } = evalHistoryAnswer({ given, type, correct });
     const answeredOrFailed = isValid ? 'answered' : 'failed';
+    const disconnectFrom = !isValid ? 'answered' : 'failed';
 
     const { _count, id: profileId } = await this.db.historyProfile.update({
       where: { userId },
       data: {
         seen: { connect: { id: questionId } },
         [answeredOrFailed]: { connect: { id: questionId } },
+        [disconnectFrom]: { disconnect: { id: questionId } },
       },
       select: {
         _count: { select: { answered: true, failed: true } },
@@ -70,6 +81,7 @@ export class HistoryTopicPractice {
         });
       }),
     );
+    await this.updateTotalProgress({ profileId });
   }
 
   async getQuestions({
@@ -81,7 +93,7 @@ export class HistoryTopicPractice {
   }): Promise<HistoryQuestion[]> {
     const profile = await this.db.historyProfile.findUnique({
       where: { userId },
-      select: { seen: { select: { id: true } }, failed: { select: { id: true } } },
+      select: { seen: selectId, failed: selectId },
     });
 
     if (!profile) {
@@ -96,7 +108,7 @@ export class HistoryTopicPractice {
         topics: { some: { id: topicId } },
         id: { notIn: getIdsArr(profile.seen) },
       },
-      include: { topics: { select: { id: true } } },
+      // include: { topics: { select: { id: true } } },
       take: HISTORY_QUESTIONS_COUNT,
     });
 
@@ -119,15 +131,14 @@ export class HistoryTopicPractice {
       const extraQs = await this.db.historyQuestion.findMany({
         where: {
           topics: { some: { id: topicId } },
-          id: { notIn: getIdsArr(profile.failed) },
         },
         take: HISTORY_QUESTIONS_COUNT - questions.length,
       });
-      extraQs.push(...extraQs);
+      questions.push(...extraQs);
 
       await this.db.historyProfile.update({
         where: { userId },
-        data: { seen: { set: extraQs.map(({ id }) => ({ id })) } },
+        data: { seen: { set: [] } },
       });
     }
 

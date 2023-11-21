@@ -17,11 +17,14 @@ class HistoryTopicPractice {
         this.db = app.prisma;
     }
     async recordAnswer({ given, questionId, userId, }) {
-        const question = await this.db.historyQuestion.findUnique({ where: { id: questionId } });
+        const question = await this.db.historyQuestion.findUnique({
+            where: { id: questionId },
+            include: { topics: { select: { id: true } } },
+        });
         if (!question) {
             throw new http_errors_1.default.BadRequest(errMsg_1.errMsg.invalidQuestionId);
         }
-        const { type, correct, topicId } = question;
+        const { type, correct, topics } = question;
         const { isValid } = (0, lib_3.evalHistoryAnswer)({ given, type, correct });
         const answeredOrFailed = isValid ? 'answered' : 'failed';
         const { _count, id: profileId } = await this.db.historyProfile.update({
@@ -35,12 +38,14 @@ class HistoryTopicPractice {
                 id: true,
             },
         });
-        await this.updateTopicProgress({
-            topicId,
-            profileId,
-            failedCount: _count.failed,
-            answeredCount: _count.answered,
-        });
+        await Promise.all(topics.map(async ({ id }) => {
+            await this.updateTopicProgress({
+                topicId: id,
+                profileId,
+                failedCount: _count.failed,
+                answeredCount: _count.answered,
+            });
+        }));
     }
     async getQuestions({ topicId, userId, }) {
         const profile = await this.db.historyProfile.findUnique({
@@ -54,9 +59,10 @@ class HistoryTopicPractice {
         // Get unseen
         const unseenQs = await this.db.historyQuestion.findMany({
             where: {
-                topic: { id: topicId },
+                topics: { some: { id: topicId } },
                 id: { notIn: (0, lib_2.getIdsArr)(profile.seen) },
             },
+            include: { topics: { select: { id: true } } },
             take: exports.HISTORY_QUESTIONS_COUNT,
         });
         questions.push(...unseenQs);
@@ -64,7 +70,7 @@ class HistoryTopicPractice {
         if (questions.length < exports.HISTORY_QUESTIONS_COUNT) {
             const failedQs = await this.db.historyQuestion.findMany({
                 where: {
-                    topic: { id: topicId },
+                    topics: { some: { id: topicId } },
                     id: { in: (0, lib_2.getIdsArr)(profile.failed) },
                 },
                 take: exports.HISTORY_QUESTIONS_COUNT - questions.length,
@@ -75,7 +81,7 @@ class HistoryTopicPractice {
         if (questions.length < exports.HISTORY_QUESTIONS_COUNT) {
             const extraQs = await this.db.historyQuestion.findMany({
                 where: {
-                    topic: { id: topicId },
+                    topics: { some: { id: topicId } },
                     id: { notIn: (0, lib_2.getIdsArr)(profile.failed) },
                 },
                 take: exports.HISTORY_QUESTIONS_COUNT - questions.length,

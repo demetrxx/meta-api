@@ -1,7 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HistoryProfile = void 0;
-class HistoryProfile {
+exports.HistoryProfileService = void 0;
+const http_errors_1 = __importDefault(require("http-errors"));
+const errMsg_1 = require("@/shared/consts/errMsg");
+class HistoryProfileService {
     db;
     constructor(app) {
         this.db = app.prisma;
@@ -20,7 +25,26 @@ class HistoryProfile {
                 },
             },
         });
-        return profile.id;
+        return profile;
+    }
+    async getProfile({ userId }) {
+        const profile = await this.db.historyProfile.findUnique({ where: { userId } });
+        if (!profile) {
+            return await this.createProfile({ userId });
+            // TODO: grant access to profile on purchase
+            // throw errors.InternalServerError(errMsg.invalidUserId);
+        }
+        return profile;
+    }
+    async getProgress({ userId, topicId, }) {
+        const profile = await this.getProfile({ userId });
+        const progress = await this.db.historyProgress.findUnique({
+            where: { topicId_profileId: { topicId, profileId: profile.id } },
+        });
+        if (!progress) {
+            throw http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidUserId);
+        }
+        return progress;
     }
 }
-exports.HistoryProfile = HistoryProfile;
+exports.HistoryProfileService = HistoryProfileService;

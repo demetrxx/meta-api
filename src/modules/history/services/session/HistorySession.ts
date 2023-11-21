@@ -60,7 +60,7 @@ export class HistorySessionService {
         profile: { connect: { userId } },
         answers: {},
       },
-      include: { ticket: { select: { questions: true } } },
+      include: { ticket: { select: { questions: { orderBy: { order: 'asc' } } } } },
     });
 
     await this.db.historyProfile.update({
@@ -92,7 +92,7 @@ export class HistorySessionService {
       where: { id: activeSession.id },
       data: {
         timePassed,
-        answers: { set: answers },
+        answers,
       },
       select: { id: true },
     });
@@ -105,7 +105,11 @@ export class HistorySessionService {
   }): Promise<HistorySession & { ticket: { questions: HistoryQuestion[] } }> {
     const { activeSession } = await this.db.historyProfile.findUniqueOrThrow({
       where: { userId },
-      select: { activeSession: { include: { ticket: { include: { questions: true } } } } },
+      select: {
+        activeSession: {
+          include: { ticket: { include: { questions: { orderBy: { order: 'asc' } } } } },
+        },
+      },
     });
 
     if (!activeSession) {
@@ -192,7 +196,7 @@ export class HistorySessionService {
   async deleteById(id: number, { userId }: { userId: number }): Promise<void> {
     const session = await this.db.historySession.findUnique({
       where: { id },
-      select: { profile: { select: { userId: true } } },
+      select: { profile: { select: { userId: true } }, ticketId: true },
     });
 
     if (!session) {
@@ -204,5 +208,9 @@ export class HistorySessionService {
     }
 
     await this.db.historySession.delete({ where: { id } });
+    await this.db.historyProfile.update({
+      where: { userId },
+      data: { ticketsSeen: { disconnect: { id: session.ticketId } } },
+    });
   }
 }

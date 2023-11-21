@@ -10,8 +10,7 @@ const schema = {
 };
 async function find(fastify) {
     fastify.get('/:id', { schema }, async (req) => {
-        await fastify.historySession.getById(Number(req.params.id), { userId: fastify.user.id });
-        return { id: Number(req.params.id) };
+        return await fastify.historySession.getById(Number(req.params.id), { userId: req.user.id });
     });
 }
 exports.find = find;

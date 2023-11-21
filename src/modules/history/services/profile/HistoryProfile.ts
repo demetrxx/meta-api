@@ -3,6 +3,7 @@ import { type FastifyInstance } from 'fastify';
 import errors from 'http-errors';
 
 import { errMsg } from '@/shared/consts/errMsg';
+import { selectId } from '@/shared/lib';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -21,7 +22,7 @@ export class HistoryProfileService {
     const topicIds = await this.db.historyTopic.findMany({ select: { id: true } });
     const progresses = topicIds.map(({ id }) => ({ topicId: id }));
 
-    const profile = await this.db.historyProfile.create({
+    return await this.db.historyProfile.create({
       data: {
         userId,
         progressTotal: 0,
@@ -32,12 +33,19 @@ export class HistoryProfileService {
         },
       },
     });
-
-    return profile;
   }
 
   async getProfile({ userId }: { userId: number }): Promise<HistoryProfile> {
-    const profile = await this.db.historyProfile.findUnique({ where: { userId } });
+    const profile = await this.db.historyProfile.findUnique({
+      where: { userId },
+      include: {
+        answered: selectId,
+        failed: selectId,
+        seen: selectId,
+        progresses: true,
+        ticketsSeen: selectId,
+      },
+    });
 
     if (!profile) {
       return await this.createProfile({ userId });

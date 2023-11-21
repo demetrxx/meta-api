@@ -11,7 +11,7 @@ const schema = {
 };
 async function deleteById(fastify) {
     fastify.delete('/:id', { schema }, async (req, res) => {
-        await fastify.historySession.deleteById(Number(req.params.id), { userId: fastify.user.id });
+        await fastify.historySession.deleteById(Number(req.params.id), { userId: req.user.id });
         return { id: Number(req.params.id) };
     });
 }

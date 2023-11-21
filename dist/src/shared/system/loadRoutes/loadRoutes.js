@@ -6,11 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.loadRoutes = void 0;
 const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
 const loadRoutes = (routes, opts, decorators = {}) => (0, fastify_plugin_1.default)(async (fastify) => {
+    for (const name of Object.keys(decorators)) {
+        const decorator = decorators[name];
+        fastify.decorate(name, typeof decorator === 'function' ? decorator(fastify) : decorator);
+    }
     routes.forEach((route) => {
-        for (const name of Object.keys(decorators)) {
-            const decorator = decorators[name];
-            fastify.decorate(decorator, typeof decorator === 'function' ? decorator(fastify) : decorator);
-        }
         fastify.register(route, opts);
     });
 });

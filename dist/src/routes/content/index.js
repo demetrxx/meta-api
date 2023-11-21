@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.contentRoutes = void 0;
 const history_1 = require("@/modules/history");
+const ticketsGetById_1 = require("@/routes/content/tickets/ticketsGetById");
 const system_1 = require("@/shared/system");
 const keyWordsCreate_1 = require("./keyWords/keyWordsCreate");
 const keyWordsDelete_1 = require("./keyWords/keyWordsDelete");
@@ -10,7 +11,7 @@ const keyWordsUpdate_1 = require("./keyWords/keyWordsUpdate");
 const questionsCreate_1 = require("./questions/questionsCreate");
 const questionsDelete_1 = require("./questions/questionsDelete");
 const questionsGetById_1 = require("./questions/questionsGetById");
-const questionsGetByTopic_1 = require("./questions/questionsGetByTopic");
+const questionsGetMany_1 = require("./questions/questionsGetMany");
 const questionsUpdate_1 = require("./questions/questionsUpdate");
 const ticketsCreate_1 = require("./tickets/ticketsCreate");
 const ticketsDelete_1 = require("./tickets/ticketsDelete");
@@ -29,7 +30,7 @@ exports.contentRoutes = (0, system_1.loadRoutes)([
     // questions
     questionsCreate_1.questionsCreate,
     questionsDelete_1.questionsDelete,
-    questionsGetByTopic_1.questionsGetByTopic,
+    questionsGetMany_1.questionsGetMany,
     questionsGetById_1.questionsGetById,
     questionsUpdate_1.questionsUpdate,
     // topics
@@ -40,6 +41,7 @@ exports.contentRoutes = (0, system_1.loadRoutes)([
     // tickets
     ticketsCreate_1.ticketsCreate,
     ticketsGetAll_1.ticketsGetAll,
+    ticketsGetById_1.ticketsGetById,
     ticketsUpdate_1.ticketsUpdate,
     ticketsDelete_1.ticketsDelete,
 ], { prefix: '/content' }, { historyContent: (fastify) => new history_1.HistoryContent(fastify) });

@@ -19,5 +19,7 @@ exports.errMsg = {
     invalidThemeProgressesCount: '500.2',
     invalidProfileId: '500.3',
     invalidUserId: '500.4',
-    noTickets: '500.5',
+    invalidTopicId: '500.5',
+    invalidTicketId: '500.6',
+    noTickets: '500.7',
 };

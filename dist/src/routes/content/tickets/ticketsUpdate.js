@@ -6,7 +6,7 @@ const ticket_1 = require("@/modules/history/typebox/ticket");
 const params = typebox_1.Type.Object({
     id: typebox_1.Type.String(),
 });
-const body = typebox_1.Type.Partial(ticket_1.TBHistoryTicketInput);
+const body = typebox_1.Type.Partial(ticket_1.TBHistoryTicketUpdateInput);
 const schema = {
     body,
     params,

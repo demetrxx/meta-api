@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.questionsUpdate = void 0;
 const typebox_1 = require("@sinclair/typebox");
 const question_1 = require("@/modules/history/typebox/question");
+const lib_1 = require("@/shared/lib");
 const params = typebox_1.Type.Object({
     id: typebox_1.Type.String(),
 });
@@ -14,11 +15,12 @@ const schema = {
 };
 async function questionsUpdate(fastify) {
     fastify.patch('/questions/:id', { schema }, async (req, res) => {
-        return await fastify.historyContent.updateQuestion(Number(req.params.id), {
+        const updateData = {
             ...req.body,
-            topic: { connect: { id: req.body.topicId } },
+            topics: req.body.topics ? { connect: (0, lib_1.toIdsObjArr)(req.body.topics) } : undefined,
             keyWords: { set: req.body.keyWords },
-        });
+        };
+        return await fastify.historyContent.updateQuestion(Number(req.params.id), updateData);
     });
 }
 exports.questionsUpdate = questionsUpdate;

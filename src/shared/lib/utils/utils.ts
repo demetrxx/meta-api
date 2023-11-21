@@ -5,3 +5,5 @@ export function getIdsArr(items?: Array<{ id: number }>): number[] {
 export function toIdsObjArr(items: number[]): Array<{ id: number }> {
   return items.map((id) => ({ id }));
 }
+
+export const selectId = { select: { id: true } } as const;

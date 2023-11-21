@@ -15,7 +15,15 @@ interface RateAnswerOutput {
 }
 
 function evalSingle({ correct, given }: RateAnswerInput): RateAnswerOutput {
-  const res = correct === given;
+  if (!Array.isArray(correct) || correct.length !== 1) {
+    throw errors.InternalServerError(errMsg.invalidQuestionData);
+  }
+
+  if (!Array.isArray(given) || given.length !== 1) {
+    throw errors.BadRequest(errMsg.invalidQInput);
+  }
+
+  const res = correct[0] === given[0];
 
   return { isValid: res, score: Number(res) };
 }
