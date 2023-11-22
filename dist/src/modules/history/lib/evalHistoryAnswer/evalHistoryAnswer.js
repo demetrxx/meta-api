@@ -8,7 +8,13 @@ const client_1 = require("@prisma/client");
 const http_errors_1 = __importDefault(require("http-errors"));
 const errMsg_1 = require("@/shared/consts/errMsg");
 function evalSingle({ correct, given }) {
-    const res = correct === given;
+    if (!Array.isArray(correct) || correct.length !== 1) {
+        throw http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidQuestionData);
+    }
+    if (!Array.isArray(given) || given.length !== 1) {
+        throw http_errors_1.default.BadRequest(errMsg_1.errMsg.invalidQInput);
+    }
+    const res = correct[0] === given[0];
     return { isValid: res, score: Number(res) };
 }
 function evalOrder({ correct, given }) {

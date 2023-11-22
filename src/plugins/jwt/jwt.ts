@@ -1,4 +1,5 @@
 import fastifyJwt, { type JWT as JWTType } from '@fastify/jwt';
+import { type User } from '@prisma/client';
 import { type FastifyPluginAsync, type FastifyReply, type FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import errors from 'http-errors';
@@ -10,7 +11,7 @@ export interface RefreshTokenData {
 
 export interface JwtUser {
   id: number;
-  roles?: string[];
+  roles?: User['roles'];
 }
 
 export const jwtPlugin: FastifyPluginAsync = fp(async (fastify) => {

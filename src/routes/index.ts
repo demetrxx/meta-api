@@ -10,6 +10,7 @@ import { userRoutes } from './user';
 export const routes: FastifyPluginAsync = fp(async (fastify) => {
   fastify.register(async function (privateServer) {
     privateServer.addHook('onRequest', privateServer.authenticate);
+    privateServer.addHook('onRequest', privateServer.verifyAccess);
     privateServer.register(sessionRoutes);
     privateServer.register(practiceRoutes);
     privateServer.register(contentRoutes);

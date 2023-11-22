@@ -7,3 +7,7 @@ export function toIdsObjArr(items: number[]): Array<{ id: number }> {
 }
 
 export const selectId = { select: { id: true } } as const;
+
+export async function timeOut(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}

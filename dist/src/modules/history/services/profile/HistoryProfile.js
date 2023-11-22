@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HistoryProfileService = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
 const errMsg_1 = require("@/shared/consts/errMsg");
+const lib_1 = require("@/shared/lib");
 class HistoryProfileService {
     db;
     constructor(app) {
@@ -14,7 +15,7 @@ class HistoryProfileService {
     async createProfile({ userId }) {
         const topicIds = await this.db.historyTopic.findMany({ select: { id: true } });
         const progresses = topicIds.map(({ id }) => ({ topicId: id }));
-        const profile = await this.db.historyProfile.create({
+        return await this.db.historyProfile.create({
             data: {
                 userId,
                 progressTotal: 0,
@@ -25,10 +26,18 @@ class HistoryProfileService {
                 },
             },
         });
-        return profile;
     }
     async getProfile({ userId }) {
-        const profile = await this.db.historyProfile.findUnique({ where: { userId } });
+        const profile = await this.db.historyProfile.findUnique({
+            where: { userId },
+            include: {
+                answered: lib_1.selectId,
+                failed: lib_1.selectId,
+                seen: lib_1.selectId,
+                progresses: true,
+                ticketsSeen: lib_1.selectId,
+            },
+        });
         if (!profile) {
             return await this.createProfile({ userId });
             // TODO: grant access to profile on purchase

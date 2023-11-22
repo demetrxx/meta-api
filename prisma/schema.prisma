@@ -12,6 +12,7 @@ datasource db {
 enum Role {
   USER
   ADMIN
+  OWNER
 }
 
 model Profile {
@@ -117,6 +118,10 @@ model HistoryTicket {
 model HistoryProfile {
   id Int @id @default(autoincrement())
 
+  userId      Int       @unique
+  user        User      @relation(fields: [userId], references: [id])
+  accessUntil DateTime?
+
   seen     HistoryQuestion[] @relation("profilesSeen")
   answered HistoryQuestion[] @relation("profilesAnswered")
   failed   HistoryQuestion[] @relation("profilesFailed")
@@ -128,9 +133,6 @@ model HistoryProfile {
   progressSession Int @default(0)
 
   timeAvarage Int?
-
-  userId Int  @unique
-  user   User @relation(fields: [userId], references: [id])
 
   activeSessionId Int?              @unique
   activeSession   HistorySession?   @relation(fields: [activeSessionId], references: [id], onDelete: SetNull)

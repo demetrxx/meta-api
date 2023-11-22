@@ -10,7 +10,7 @@ const errMsg_1 = require("@/shared/consts/errMsg");
 const lib_2 = require("@/shared/lib");
 const common_1 = require("../../consts/common");
 const lib_3 = require("../../lib");
-exports.HISTORY_QUESTIONS_COUNT = 10;
+exports.HISTORY_QUESTIONS_COUNT = 1;
 class HistoryTopicPractice {
     db;
     constructor(app) {
@@ -24,14 +24,24 @@ class HistoryTopicPractice {
         if (!question) {
             throw new http_errors_1.default.BadRequest(errMsg_1.errMsg.invalidQuestionId);
         }
+        if (given.length === 0) {
+            // skip question
+            await this.db.historyProfile.update({
+                where: { userId },
+                data: { seen: { connect: { id: questionId } } },
+            });
+            return;
+        }
         const { type, correct, topics } = question;
         const { isValid } = (0, lib_3.evalHistoryAnswer)({ given, type, correct });
         const answeredOrFailed = isValid ? 'answered' : 'failed';
+        const disconnectFrom = !isValid ? 'answered' : 'failed';
         const { _count, id: profileId } = await this.db.historyProfile.update({
             where: { userId },
             data: {
                 seen: { connect: { id: questionId } },
                 [answeredOrFailed]: { connect: { id: questionId } },
+                [disconnectFrom]: { disconnect: { id: questionId } },
             },
             select: {
                 _count: { select: { answered: true, failed: true } },
@@ -46,11 +56,12 @@ class HistoryTopicPractice {
                 answeredCount: _count.answered,
             });
         }));
+        await this.updateTotalProgress({ profileId });
     }
     async getQuestions({ topicId, userId, }) {
         const profile = await this.db.historyProfile.findUnique({
             where: { userId },
-            select: { seen: { select: { id: true } }, failed: { select: { id: true } } },
+            select: { seen: lib_2.selectId, failed: lib_2.selectId },
         });
         if (!profile) {
             throw http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidUserId);
@@ -62,7 +73,7 @@ class HistoryTopicPractice {
                 topics: { some: { id: topicId } },
                 id: { notIn: (0, lib_2.getIdsArr)(profile.seen) },
             },
-            include: { topics: { select: { id: true } } },
+            // include: { topics: { select: { id: true } } },
             take: exports.HISTORY_QUESTIONS_COUNT,
         });
         questions.push(...unseenQs);
@@ -82,14 +93,13 @@ class HistoryTopicPractice {
             const extraQs = await this.db.historyQuestion.findMany({
                 where: {
                     topics: { some: { id: topicId } },
-                    id: { notIn: (0, lib_2.getIdsArr)(profile.failed) },
                 },
                 take: exports.HISTORY_QUESTIONS_COUNT - questions.length,
             });
-            extraQs.push(...extraQs);
+            questions.push(...extraQs);
             await this.db.historyProfile.update({
                 where: { userId },
-                data: { seen: { set: extraQs.map(({ id }) => ({ id })) } },
+                data: { seen: { set: [] } },
             });
         }
         return questions;

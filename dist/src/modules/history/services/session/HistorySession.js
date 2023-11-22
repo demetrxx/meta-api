@@ -47,7 +47,7 @@ class HistorySessionService {
                 profile: { connect: { userId } },
                 answers: {},
             },
-            include: { ticket: { select: { questions: true } } },
+            include: { ticket: { select: { questions: { orderBy: { order: 'asc' } } } } },
         });
         await this.db.historyProfile.update({
             where: { userId },
@@ -68,7 +68,7 @@ class HistorySessionService {
             where: { id: activeSession.id },
             data: {
                 timePassed,
-                answers: { set: answers },
+                answers,
             },
             select: { id: true },
         });
@@ -76,7 +76,11 @@ class HistorySessionService {
     async getActive({ userId, }) {
         const { activeSession } = await this.db.historyProfile.findUniqueOrThrow({
             where: { userId },
-            select: { activeSession: { include: { ticket: { include: { questions: true } } } } },
+            select: {
+                activeSession: {
+                    include: { ticket: { include: { questions: { orderBy: { order: 'asc' } } } } },
+                },
+            },
         });
         if (!activeSession) {
             throw new http_errors_1.default.BadRequest(errMsg_1.errMsg.noActiveSession);
@@ -143,7 +147,7 @@ class HistorySessionService {
     async deleteById(id, { userId }) {
         const session = await this.db.historySession.findUnique({
             where: { id },
-            select: { profile: { select: { userId: true } } },
+            select: { profile: { select: { userId: true } }, ticketId: true },
         });
         if (!session) {
             throw new http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidSessionId);
@@ -152,6 +156,10 @@ class HistorySessionService {
             throw new http_errors_1.default.Forbidden();
         }
         await this.db.historySession.delete({ where: { id } });
+        await this.db.historyProfile.update({
+            where: { userId },
+            data: { ticketsSeen: { disconnect: { id: session.ticketId } } },
+        });
     }
 }
 exports.HistorySessionService = HistorySessionService;
