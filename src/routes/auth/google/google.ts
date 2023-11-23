@@ -68,7 +68,7 @@ export async function google(fastify: FastifyInstance): Promise<void> {
 
         if (user) {
           // Login
-          const tokenData = { id: user.id, roles: user.roles };
+          const tokenData = { id: user.id, roles: user.roles, accountStatus: user.accountStatus };
 
           const accessToken = this.generateAccessToken(tokenData);
           const refreshToken = this.generateRefreshToken(tokenData);

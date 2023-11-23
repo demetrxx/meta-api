@@ -1,0 +1,5 @@
+psql -d meta -U demetrxx
+
+\dt - show tables
+\d table_name - show table structure
+\q - exit

@@ -22,8 +22,8 @@ import { topicsDelete } from './topics/topicsDelete';
 import { topicsGetAll } from './topics/topicsGetAll';
 import { topicsUpdate } from './topics/topicsUpdate';
 
-export const contentRoutes = loadRoutes(
-  [
+export const contentRoutes = loadRoutes({
+  routes: [
     // keyWords
     keyWordsGetByTopic,
     keyWordsUpdate,
@@ -47,6 +47,7 @@ export const contentRoutes = loadRoutes(
     ticketsUpdate,
     ticketsDelete,
   ],
-  { prefix: '/content' },
-  { historyContent: (fastify: FastifyInstance) => new HistoryContent(fastify) },
-);
+  opts: { prefix: '/content' },
+  decorators: { historyContent: (fastify: FastifyInstance) => new HistoryContent(fastify) },
+  adminsOnly: true,
+});

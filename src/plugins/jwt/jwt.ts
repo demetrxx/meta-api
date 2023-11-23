@@ -12,6 +12,7 @@ export interface RefreshTokenData {
 export interface JwtUser {
   id: number;
   roles?: User['roles'];
+  accountStatus?: User['accountStatus'];
 }
 
 export const jwtPlugin: FastifyPluginAsync = fp(async (fastify) => {

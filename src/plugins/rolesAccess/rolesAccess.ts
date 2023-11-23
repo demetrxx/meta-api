@@ -8,6 +8,7 @@ import { errMsg } from '@/shared/consts/errMsg';
 export const rolesAccessPlugin: FastifyPluginAsync = fp(async (fastify) => {
   fastify.decorate('verifyAccess', async (request: FastifyRequest, reply: FastifyReply) => {
     if (request.user.roles?.includes(Role.ADMIN)) return;
+    if (request.user.accountStatus !== 'active') throw errors.Forbidden(errMsg.userBlocked);
 
     // TODO: remove
     // const date = new Date();
@@ -31,8 +32,15 @@ export const rolesAccessPlugin: FastifyPluginAsync = fp(async (fastify) => {
   });
 });
 
+export const adminAccessPlugin: FastifyPluginAsync = fp(async (fastify) => {
+  fastify.decorate('verifyAdmin', async (request: FastifyRequest, reply: FastifyReply) => {
+    if (!request.user.roles?.includes(Role.ADMIN)) throw errors.Forbidden(errMsg.notAdmin);
+  });
+});
+
 declare module 'fastify' {
   interface FastifyInstance {
     verifyAccess: (req: FastifyRequest, res: FastifyReply) => Promise<void>;
+    verifyAdmin: (req: FastifyRequest, res: FastifyReply) => Promise<void>;
   }
 }

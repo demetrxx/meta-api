@@ -11,6 +11,7 @@ const schema = Type.Object({
   GOOGLE_SECRET: Type.String(),
   GOOGLE_ID: Type.String(),
   GOOGLE_CLIENT_REDIRECT_PATH: Type.String(),
+  OWNER_EMAIL: Type.String(),
 });
 
 export type IEnvSchema = Static<typeof schema>;

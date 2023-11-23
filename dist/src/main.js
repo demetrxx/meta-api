@@ -15,6 +15,7 @@ function buildServer(config, envSchema) {
     app.register(plugins_1.validatorPlugin);
     app.register(plugins_1.prismaPlugin);
     app.register(plugins_1.jwtPlugin);
+    app.register(plugins_1.rolesAccessPlugin);
     app.register(routes_1.routes);
     return app;
 }

@@ -5,8 +5,8 @@ import { getProfile } from '@/routes/user/getProfile/getProfile';
 import { getProgress } from '@/routes/user/getProgress/getProgress';
 import { loadRoutes } from '@/shared/system';
 
-export const userRoutes = loadRoutes(
-  [getProfile, getProgress],
-  { prefix: '/user' },
-  { historyProfile: (fastify: FastifyInstance) => new HistoryProfileService(fastify) },
-);
+export const userRoutes = loadRoutes({
+  routes: [getProfile, getProgress],
+  opts: { prefix: '/user' },
+  decorators: { historyProfile: (fastify: FastifyInstance) => new HistoryProfileService(fastify) },
+});

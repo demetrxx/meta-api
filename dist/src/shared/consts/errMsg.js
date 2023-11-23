@@ -14,6 +14,9 @@ exports.errMsg = {
     // sessions
     invalidSessionId: '3.1',
     noActiveSession: '3.2',
+    // subscriptions
+    noSubscription: '4.1',
+    subscriptionExpired: '4.2',
     // Internal server error
     invalidQuestionData: '500.1',
     invalidThemeProgressesCount: '500.2',
@@ -22,4 +25,5 @@ exports.errMsg = {
     invalidTopicId: '500.5',
     invalidTicketId: '500.6',
     noTickets: '500.7',
+    noProfile: '500.8',
 };
