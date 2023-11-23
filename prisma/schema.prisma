@@ -15,6 +15,11 @@ enum Role {
   OWNER
 }
 
+enum AccountStatus {
+  active
+  blocked
+}
+
 model Profile {
   id Int @id @default(autoincrement())
 
@@ -33,8 +38,8 @@ model User {
   phone   String?
   profile Profile?
 
-  roles         Role[] @default([USER])
-  accountStatus String @default("active")
+  roles         Role[]        @default([USER])
+  accountStatus AccountStatus @default(active)
 
   registrationDate DateTime  @default(now())
   lastVisitDate    DateTime? @default(now())

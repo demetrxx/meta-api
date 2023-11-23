@@ -14,9 +14,11 @@ exports.errMsg = {
     // sessions
     invalidSessionId: '3.1',
     noActiveSession: '3.2',
-    // subscriptions
+    // subscriptions & access
     noSubscription: '4.1',
     subscriptionExpired: '4.2',
+    userBlocked: '4.3',
+    notAdmin: '4.4',
     // Internal server error
     invalidQuestionData: '500.1',
     invalidThemeProgressesCount: '500.2',

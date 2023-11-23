@@ -16,6 +16,7 @@ const schema = typebox_1.Type.Object({
     GOOGLE_SECRET: typebox_1.Type.String(),
     GOOGLE_ID: typebox_1.Type.String(),
     GOOGLE_CLIENT_REDIRECT_PATH: typebox_1.Type.String(),
+    OWNER_EMAIL: typebox_1.Type.String(),
 });
 exports.envSchema = (0, env_schema_1.default)({
     schema,

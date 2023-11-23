@@ -38,7 +38,7 @@ async function google(fastify) {
                 const user = await this.prisma.user.findUnique({ where: { email: data.email } });
                 if (user) {
                     // Login
-                    const tokenData = { id: user.id, roles: user.roles };
+                    const tokenData = { id: user.id, roles: user.roles, accountStatus: user.accountStatus };
                     const accessToken = this.generateAccessToken(tokenData);
                     const refreshToken = this.generateRefreshToken(tokenData);
                     redirect({ success: true, accessToken, type: 'login', refreshToken });

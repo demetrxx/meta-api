@@ -29,7 +29,7 @@ export async function setup(app: FastifyInstance): Promise<void> {
       return;
     }
 
-    // Create the initial admin user
+    // Create the initial admin profile
     const adminUser = await app.prisma.user.create({
       data: {
         email: app.env.OWNER_EMAIL,
@@ -37,7 +37,7 @@ export async function setup(app: FastifyInstance): Promise<void> {
       },
     });
 
-    console.log('Initial admin user created:', adminUser);
+    console.log('Initial admin profile created:', adminUser);
 
     // Mark setup as completed
     await markSetupAsCompleted();

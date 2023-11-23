@@ -21,27 +21,32 @@ const topicsCreate_1 = require("./topics/topicsCreate");
 const topicsDelete_1 = require("./topics/topicsDelete");
 const topicsGetAll_1 = require("./topics/topicsGetAll");
 const topicsUpdate_1 = require("./topics/topicsUpdate");
-exports.contentRoutes = (0, system_1.loadRoutes)([
-    // keyWords
-    keyWordsGetByTopic_1.keyWordsGetByTopic,
-    keyWordsUpdate_1.keyWordsUpdate,
-    keyWordsCreate_1.keyWordsCreate,
-    keyWordsDelete_1.keyWordsDelete,
-    // questions
-    questionsCreate_1.questionsCreate,
-    questionsDelete_1.questionsDelete,
-    questionsGetMany_1.questionsGetMany,
-    questionsGetById_1.questionsGetById,
-    questionsUpdate_1.questionsUpdate,
-    // topics
-    topicsGetAll_1.topicsGetAll,
-    topicsUpdate_1.topicsUpdate,
-    topicsCreate_1.topicsCreate,
-    topicsDelete_1.topicsDelete,
-    // tickets
-    ticketsCreate_1.ticketsCreate,
-    ticketsGetAll_1.ticketsGetAll,
-    ticketsGetById_1.ticketsGetById,
-    ticketsUpdate_1.ticketsUpdate,
-    ticketsDelete_1.ticketsDelete,
-], { prefix: '/content' }, { historyContent: (fastify) => new history_1.HistoryContent(fastify) });
+exports.contentRoutes = (0, system_1.loadRoutes)({
+    routes: [
+        // keyWords
+        keyWordsGetByTopic_1.keyWordsGetByTopic,
+        keyWordsUpdate_1.keyWordsUpdate,
+        keyWordsCreate_1.keyWordsCreate,
+        keyWordsDelete_1.keyWordsDelete,
+        // questions
+        questionsCreate_1.questionsCreate,
+        questionsDelete_1.questionsDelete,
+        questionsGetMany_1.questionsGetMany,
+        questionsGetById_1.questionsGetById,
+        questionsUpdate_1.questionsUpdate,
+        // topics
+        topicsGetAll_1.topicsGetAll,
+        topicsUpdate_1.topicsUpdate,
+        topicsCreate_1.topicsCreate,
+        topicsDelete_1.topicsDelete,
+        // tickets
+        ticketsCreate_1.ticketsCreate,
+        ticketsGetAll_1.ticketsGetAll,
+        ticketsGetById_1.ticketsGetById,
+        ticketsUpdate_1.ticketsUpdate,
+        ticketsDelete_1.ticketsDelete,
+    ],
+    opts: { prefix: '/content' },
+    decorators: { historyContent: (fastify) => new history_1.HistoryContent(fastify) },
+    adminsOnly: true,
+});

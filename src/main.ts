@@ -2,13 +2,7 @@ import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import Fastify, { type FastifyInstance } from 'fastify';
 
 import { type Config, type IEnvSchema } from '../config';
-import {
-  adminAccessPlugin,
-  jwtPlugin,
-  prismaPlugin,
-  rolesAccessPlugin,
-  validatorPlugin,
-} from './plugins';
+import { jwtPlugin, prismaPlugin, rolesAccessPlugin, validatorPlugin } from './plugins';
 import { routes } from './routes';
 
 export function buildServer(config: Config, envSchema: IEnvSchema): FastifyInstance {
@@ -22,7 +16,6 @@ export function buildServer(config: Config, envSchema: IEnvSchema): FastifyInsta
 
   app.register(jwtPlugin);
   app.register(rolesAccessPlugin);
-  app.register(adminAccessPlugin);
 
   app.register(routes);
 

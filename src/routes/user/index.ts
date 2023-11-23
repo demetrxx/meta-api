@@ -1,12 +1,17 @@
 import { type FastifyInstance } from 'fastify';
 
-import { HistoryProfileService } from '@/modules/history';
-import { getProfile } from '@/routes/user/getProfile/getProfile';
-import { getProgress } from '@/routes/user/getProgress/getProgress';
+import { UserService } from '@/modules/common';
 import { loadRoutes } from '@/shared/system';
 
+import { changeRoles } from './changeRoles/changeRoles';
+import { changeStatus } from './changeStatus/changeStatus';
+import { deleteById } from './deleteById/deleteById';
+import { getByEmail } from './getByEmail/getByEmail';
+import { getMany } from './getMany/getMany';
+
 export const userRoutes = loadRoutes({
-  routes: [getProfile, getProgress],
+  routes: [getByEmail, getMany, changeStatus, changeRoles, deleteById],
   opts: { prefix: '/user' },
-  decorators: { historyProfile: (fastify: FastifyInstance) => new HistoryProfileService(fastify) },
+  decorators: { userService: (fastify: FastifyInstance) => new UserService(fastify) },
+  adminsOnly: true,
 });

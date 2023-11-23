@@ -15,7 +15,8 @@
         "DeepPartial": true,
         "ValueOf": true,
         "OptionalRecord": true,
-        "EnvMode": true
+        "EnvMode": true,
+        "Pagination": true
     },
     "rules": {
         "simple-import-sort/imports": "error",

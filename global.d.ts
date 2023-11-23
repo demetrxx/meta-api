@@ -11,3 +11,8 @@ type OptionalRecord<R extends keyof any, T> = {
 };
 
 type EnvMode = 'production' | 'development';
+
+interface Pagination {
+  page?: number;
+  limit?: number;
+}

@@ -15,7 +15,7 @@ export const rolesAccessPlugin: FastifyPluginAsync = fp(async (fastify) => {
     // date.setFullYear(2024);
     //
     // await fastify.prisma.historyProfile.update({
-    //   where: { userId: request.user.id },
+    //   where: { userId: request.profile.id },
     //   data: { accessUntil: date },
     // });
 
@@ -30,11 +30,13 @@ export const rolesAccessPlugin: FastifyPluginAsync = fp(async (fastify) => {
     const canAccess = profile.accessUntil.getTime() > Date.now();
     if (!canAccess) throw errors.Forbidden(errMsg.subscriptionExpired);
   });
-});
 
-export const adminAccessPlugin: FastifyPluginAsync = fp(async (fastify) => {
   fastify.decorate('verifyAdmin', async (request: FastifyRequest, reply: FastifyReply) => {
     if (!request.user.roles?.includes(Role.ADMIN)) throw errors.Forbidden(errMsg.notAdmin);
+  });
+
+  fastify.decorate('verifyOwner', async (request: FastifyRequest, reply: FastifyReply) => {
+    if (!request.user.roles?.includes(Role.OWNER)) throw errors.Forbidden(errMsg.notOwner);
   });
 });
 
@@ -42,5 +44,6 @@ declare module 'fastify' {
   interface FastifyInstance {
     verifyAccess: (req: FastifyRequest, res: FastifyReply) => Promise<void>;
     verifyAdmin: (req: FastifyRequest, res: FastifyReply) => Promise<void>;
+    verifyOwner: (req: FastifyRequest, res: FastifyReply) => Promise<void>;
   }
 }

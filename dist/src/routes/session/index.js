@@ -9,4 +9,8 @@ const find_1 = require("./find/find");
 const getActive_1 = require("./getActive/getActive");
 const recordAnswer_1 = require("./recordAnswer/recordAnswer");
 const start_1 = require("./start/start");
-exports.sessionRoutes = (0, system_1.loadRoutes)([start_1.start, getActive_1.getActive, complete_1.complete, deleteById_1.deleteById, recordAnswer_1.recordAnswer, find_1.find], { prefix: '/session' }, { historySession: (fastify) => new history_1.HistorySessionService(fastify) });
+exports.sessionRoutes = (0, system_1.loadRoutes)({
+    routes: [start_1.start, getActive_1.getActive, complete_1.complete, deleteById_1.deleteById, recordAnswer_1.recordAnswer, find_1.find],
+    opts: { prefix: '/session' },
+    decorators: { historySession: (fastify) => new history_1.HistorySessionService(fastify) },
+});
