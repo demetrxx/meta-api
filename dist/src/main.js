@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildServer = void 0;
+const formbody_1 = __importDefault(require("@fastify/formbody"));
 const fastify_1 = __importDefault(require("fastify"));
 const plugins_1 = require("./plugins");
 const routes_1 = require("./routes");
@@ -14,6 +15,7 @@ function buildServer(config, envSchema) {
     app.decorate('env', envSchema);
     app.register(plugins_1.validatorPlugin);
     app.register(plugins_1.prismaPlugin);
+    app.register(formbody_1.default);
     app.register(plugins_1.jwtPlugin);
     app.register(plugins_1.rolesAccessPlugin);
     app.register(routes_1.routes);

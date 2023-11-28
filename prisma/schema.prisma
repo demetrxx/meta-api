@@ -47,19 +47,65 @@ model User {
   oauthProvider  String?
   googleId       String?          @unique
   historyProfile HistoryProfile[]
+  orders         Order[]
 }
 
 // Payments
 
-enum PaymentStatus {
-  CREATED
-  SUCCESS
-  FAIL
+enum OrderType {
+  SINGLE_PAYMENT
+  SUBSCRIPTION
 }
 
 model PaymentOption {
-  id   Int    @id @default(autoincrement())
-  name String @unique
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  orderType OrderType
+  orders    Order[]
+
+  fondyInput Json
+}
+
+enum OrderStatus {
+  CREATED
+
+  // payment
+  SUCCESS
+  FAILURE
+
+  // subs
+  SUBSCRIBED
+  UNSUBSCRIBED
+}
+
+model Order {
+  id   Int       @id @default(autoincrement())
+  type OrderType
+
+  paymentOptionId Int
+  paymentOption   PaymentOption @relation(fields: [paymentOptionId], references: [id])
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  payments Payment[]
+}
+
+enum PaymentStatus {
+  SUCCESS
+  FAILURE
+  REVERSED
+}
+
+model Payment {
+  id     Int           @id @default(autoincrement())
+  status PaymentStatus
+  date   DateTime
+
+  orderId Int   @unique
+  order   Order @relation(fields: [orderId], references: [id])
+
+  data Json
 }
 
 // --- History ---

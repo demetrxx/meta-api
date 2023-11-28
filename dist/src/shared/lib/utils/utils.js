@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPagination = exports.timeOut = exports.selectId = exports.toIdsObjArr = exports.getIdsArr = void 0;
+exports.isPublicRoute = exports.getPagination = exports.timeOut = exports.selectId = exports.toIdsObjArr = exports.getIdsArr = void 0;
 function getIdsArr(items) {
     return items?.map((i) => i.id) ?? [];
 }
@@ -20,3 +20,7 @@ function getPagination({ page, limit }) {
     return { take: limit, skip: (page - 1) * limit };
 }
 exports.getPagination = getPagination;
+function isPublicRoute(request) {
+    return request.routeOptions.url.includes('public');
+}
+exports.isPublicRoute = isPublicRoute;

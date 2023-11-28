@@ -79,16 +79,15 @@ export class PaymentsService {
 
       const subsData = {
         order_desc: 'test order',
-        order_id: 29,
+        order_id: 30,
         currency: 'UAH',
         amount: 5200,
         recurring_data: {
           every: 1,
-          period: 'month',
+          period: 'day',
           amount: 5200,
           start_time: startDate,
           end_time: endDate,
-          conditions: { quantity: 12 },
           state: 'y',
           readonly: 'y',
         },
