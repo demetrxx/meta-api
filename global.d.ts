@@ -16,3 +16,7 @@ interface Pagination {
   page?: number;
   limit?: number;
 }
+
+type Id = number;
+
+declare module 'cloudipsp-node-js-sdk';

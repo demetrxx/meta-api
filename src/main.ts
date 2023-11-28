@@ -1,3 +1,4 @@
+import formBody from '@fastify/formbody';
 import { type TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import Fastify, { type FastifyInstance } from 'fastify';
 
@@ -13,6 +14,7 @@ export function buildServer(config: Config, envSchema: IEnvSchema): FastifyInsta
 
   app.register(validatorPlugin);
   app.register(prismaPlugin);
+  app.register(formBody);
 
   app.register(jwtPlugin);
   app.register(rolesAccessPlugin);

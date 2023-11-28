@@ -1,3 +1,5 @@
+import { type FastifyRequest } from 'fastify';
+
 export function getIdsArr(items?: Array<{ id: number }>): number[] {
   return items?.map((i) => i.id) ?? [];
 }
@@ -19,4 +21,8 @@ export function getPagination({ page, limit }: Pagination): {
   if (!page || !limit) return {};
 
   return { take: limit, skip: (page - 1) * limit };
+}
+
+export function isPublicRoute(request: FastifyRequest): boolean {
+  return request.routeOptions.url.includes('public');
 }

@@ -1,6 +1,6 @@
 import { type FastifyInstance } from 'fastify';
 
-import { UserService } from '@/modules/common';
+import { UserService } from '@/modules/user';
 import { loadRoutes } from '@/shared/system';
 
 import { changeRoles } from './changeRoles/changeRoles';

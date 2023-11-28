@@ -16,7 +16,8 @@
         "ValueOf": true,
         "OptionalRecord": true,
         "EnvMode": true,
-        "Pagination": true
+        "Pagination": true,
+        "Id": true
     },
     "rules": {
         "simple-import-sort/imports": "error",

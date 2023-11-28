@@ -19,6 +19,9 @@ exports.errMsg = {
     subscriptionExpired: '4.2',
     userBlocked: '4.3',
     notAdmin: '4.4',
+    notOwner: '4.5',
+    // users
+    invalidEmail: '5.1',
     // Internal server error
     invalidQuestionData: '500.1',
     invalidThemeProgressesCount: '500.2',

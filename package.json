@@ -15,12 +15,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@fastify/formbody": "^7.4.0",
     "@fastify/jwt": "^7.2.1",
     "@fastify/oauth2": "7.0.0",
     "@fastify/type-provider-typebox": "^3.5.0",
     "@prisma/client": "5.3.1",
     "@sinclair/typebox": "^0.31.15",
     "@types/simple-get": "^4.0.0",
+    "cloudipsp-node-js-sdk": "^1.0.8",
     "env-schema": "^5.2.0",
     "fastify": "^4.23.2",
     "fastify-plugin": "^4.5.1",

@@ -11,7 +11,12 @@ const schema = Type.Object({
   GOOGLE_SECRET: Type.String(),
   GOOGLE_ID: Type.String(),
   GOOGLE_CLIENT_REDIRECT_PATH: Type.String(),
+  PAYMENT_SUCCESS_REDIRECT_PATH: Type.String(),
+  PAYMENT_FAILURE_REDIRECT_PATH: Type.String(),
   OWNER_EMAIL: Type.String(),
+  FONDY_MERCHANT_ID: Type.String(),
+  FONDY_SECRET: Type.String(),
+  FONDY_CREDIT: Type.String(),
 });
 
 export type IEnvSchema = Static<typeof schema>;

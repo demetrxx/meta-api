@@ -3,6 +3,7 @@ import fp from 'fastify-plugin';
 
 import { authRoutes } from './auth';
 import { contentRoutes } from './content';
+import { paymentsRoutes } from './payments';
 import { practiceRoutes } from './practice';
 import { profileRoutes } from './profile';
 import { sessionRoutes } from './session';
@@ -17,7 +18,10 @@ export const routes: FastifyPluginAsync = fp(async (fastify) => {
     privateServer.register(practiceRoutes);
     privateServer.register(contentRoutes);
     privateServer.register(profileRoutes);
+
+    // user
     privateServer.register(userRoutes);
+    privateServer.register(paymentsRoutes);
   });
 
   fastify.register(async function (publicServer) {

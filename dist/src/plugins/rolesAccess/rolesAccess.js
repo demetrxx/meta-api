@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adminAccessPlugin = exports.rolesAccessPlugin = void 0;
+exports.rolesAccessPlugin = void 0;
 const client_1 = require("@prisma/client");
 const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
 const http_errors_1 = __importDefault(require("http-errors"));
@@ -34,10 +34,12 @@ exports.rolesAccessPlugin = (0, fastify_plugin_1.default)(async (fastify) => {
         if (!canAccess)
             throw http_errors_1.default.Forbidden(errMsg_1.errMsg.subscriptionExpired);
     });
-});
-exports.adminAccessPlugin = (0, fastify_plugin_1.default)(async (fastify) => {
     fastify.decorate('verifyAdmin', async (request, reply) => {
         if (!request.user.roles?.includes(client_1.Role.ADMIN))
             throw http_errors_1.default.Forbidden(errMsg_1.errMsg.notAdmin);
+    });
+    fastify.decorate('verifyOwner', async (request, reply) => {
+        if (!request.user.roles?.includes(client_1.Role.OWNER))
+            throw http_errors_1.default.Forbidden(errMsg_1.errMsg.notOwner);
     });
 });

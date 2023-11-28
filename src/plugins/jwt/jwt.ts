@@ -5,6 +5,7 @@ import fp from 'fastify-plugin';
 import errors from 'http-errors';
 
 import { errMsg } from '@/shared/consts/errMsg';
+import { isPublicRoute } from '@/shared/lib';
 export interface RefreshTokenData {
   id: number;
 }
@@ -27,6 +28,8 @@ export const jwtPlugin: FastifyPluginAsync = fp(async (fastify) => {
   });
 
   fastify.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
+    if (isPublicRoute(request)) return;
+
     try {
       await request.accessJwtVerify();
     } catch (err) {

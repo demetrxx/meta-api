@@ -8,6 +8,7 @@ const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
 const auth_1 = require("./auth");
 const content_1 = require("./content");
 const practice_1 = require("./practice");
+const profile_1 = require("./profile");
 const session_1 = require("./session");
 const user_1 = require("./user");
 exports.routes = (0, fastify_plugin_1.default)(async (fastify) => {
@@ -17,6 +18,7 @@ exports.routes = (0, fastify_plugin_1.default)(async (fastify) => {
         privateServer.register(session_1.sessionRoutes);
         privateServer.register(practice_1.practiceRoutes);
         privateServer.register(content_1.contentRoutes);
+        privateServer.register(profile_1.profileRoutes);
         privateServer.register(user_1.userRoutes);
     });
     fastify.register(async function (publicServer) {

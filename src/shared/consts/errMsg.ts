@@ -24,6 +24,10 @@ export const errMsg = {
   // users
   invalidEmail: '5.1',
 
+  // payments
+  invalidOrderId: '6.1',
+  paymentCreationFailed: '6.2',
+
   // Internal server error
   invalidQuestionData: '500.1',
   invalidThemeProgressesCount: '500.2',
