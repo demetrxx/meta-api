@@ -2,6 +2,7 @@ import CloudIpsp from 'cloudipsp-node-js-sdk';
 import { type FastifyInstance } from 'fastify';
 
 import { type FondyPayment, paymentsCallbackPath, paymentsRedirectPath } from '@/modules/payments';
+import { type FondyPaymentInput, type FondySubsInput } from '@/modules/payments/types/payments';
 import { errMsg } from '@/shared/consts/errMsg';
 
 import { type IEnvSchema } from '../../../../../config';
@@ -34,33 +35,25 @@ export class PaymentsService {
     userId: Id;
     paymentOptionId: Id;
   }): Promise<{ paymentUrl: string }> {
+    // Find user
     const user = await this.db.user.findUnique({ where: { id: userId } });
     if (!user) throw new Error(errMsg.invalidUserId);
 
-    // const paymentOption = await this.db.paymentOption.findUnique({ where: { id: paymentOptionId } });
-    // if (!order) throw new Error(errMsg.invalidOrderId);
+    // Find payment option
+    const paymentOption = await this.db.paymentOption.findUnique({
+      where: { id: paymentOptionId },
+    });
+    if (!paymentOption) throw new Error(errMsg.invalidPaymentOptionId);
 
-    const paymentOption = {
-      id: 1,
-      type: 'SUBSCRIPTION',
+    // Create order
+    const order = await this.db.order.create({
       data: {
-        name: 'Whole lotta red',
-        amount: 5200,
-        order_desc: 'Benzomaggedon',
-        currency: 'UAH',
+        paymentOptionId: paymentOption.id,
+        type: paymentOption.orderType,
+        userId: user.id,
+        status: 'CREATED',
       },
-    };
-
-    // TODO: create order
-    // const order = await this.db.order.findUnique({ where: { id: orderId } });
-
-    const order = {
-      id: 15,
-      paymentOptionId: paymentOption.id,
-      userId: user.id,
-      status: 'CREATED',
-      createdAt: new Date(),
-    };
+    });
 
     const CALLBACK_URL = this.env.API_URL + paymentsCallbackPath(true);
     const REDIRECT_URL = this.env.API_URL + paymentsRedirectPath(true);
@@ -71,39 +64,33 @@ export class PaymentsService {
       return date.toISOString().slice(0, 10);
     }
 
-    if (paymentOption.type === 'SUBSCRIPTION') {
+    if (paymentOption.orderType === 'SUBSCRIPTION') {
       const now = new Date();
       const startDate = formatDate(now);
       now.setFullYear(now.getFullYear() + 1);
       const endDate = formatDate(now);
 
       const subsData = {
-        order_desc: 'test order',
-        order_id: 30,
-        currency: 'UAH',
-        amount: 5200,
-        recurring_data: {
-          every: 1,
-          period: 'day',
-          amount: 5200,
-          start_time: startDate,
-          end_time: endDate,
-          state: 'y',
-          readonly: 'y',
-        },
+        ...(paymentOption.fondyInput as Partial<FondySubsInput>),
+
+        product_id: paymentOption.id,
+        order_id: order.id,
+        sender_email: user.email,
+
+        // payment meta
         response_url: REDIRECT_URL,
-        // subscription_callback_url: CALLBACK_URL,
         server_callback_url: CALLBACK_URL,
+        // subscription_callback_url: CALLBACK_URL,
       };
 
       res = await this.fondy.Subscription(subsData);
     }
 
-    if (paymentOption.type === 'PAYMENT') {
+    if (paymentOption.orderType === 'SINGLE_PAYMENT') {
       const paymentData = {
-        ...paymentOption.data,
-        product_id: paymentOption.id,
+        ...(paymentOption.fondyInput as Partial<FondyPaymentInput>),
 
+        product_id: paymentOption.id,
         order_id: order.id,
         sender_email: user.email,
 

@@ -79,8 +79,9 @@ enum OrderStatus {
 }
 
 model Order {
-  id   Int       @id @default(autoincrement())
-  type OrderType
+  id     Int         @id @default(autoincrement())
+  type   OrderType
+  status OrderStatus
 
   paymentOptionId Int
   paymentOption   PaymentOption @relation(fields: [paymentOptionId], references: [id])

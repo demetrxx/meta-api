@@ -37,3 +37,31 @@ export interface FondyPayment {
 export interface FondySubscription {
   data: string;
 }
+
+export interface FondyPaymentInput {
+  name: string;
+  amount: number;
+  order_desc: string;
+  currency: 'UAH';
+  // common
+  product_id: string;
+
+  order_id: string;
+  sender_email: string;
+
+  // payment meta
+  server_callback_url: string;
+  response_url: string;
+}
+
+export interface FondySubsInput extends FondyPaymentInput {
+  recurring_data: {
+    every: 1;
+    period: 'day' | 'month';
+    amount: number;
+    start_time: string;
+    end_time: string;
+    state: 'y';
+    readonly: 'y';
+  };
+}
