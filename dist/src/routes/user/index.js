@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userRoutes = void 0;
-const user_1 = require("../../modules/user");
-const system_1 = require("../../shared/system");
+const user_1 = require("@/modules/user");
+const system_1 = require("@/shared/system");
 const changeRoles_1 = require("./changeRoles/changeRoles");
 const changeStatus_1 = require("./changeStatus/changeStatus");
 const deleteById_1 = require("./deleteById/deleteById");

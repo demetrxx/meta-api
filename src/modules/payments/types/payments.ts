@@ -44,12 +44,13 @@ export interface FondyPaymentInput {
   order_desc: string;
   currency: 'UAH';
   // common
-  product_id: string;
+  product_id: string | number;
 
-  order_id: string;
+  order_id: string | number;
   sender_email: string;
 
   // payment meta
+  subscription_callback_url: string;
   server_callback_url: string;
   response_url: string;
   recurring_data: {

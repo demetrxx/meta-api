@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentsService = void 0;
 const cloudipsp_node_js_sdk_1 = __importDefault(require("cloudipsp-node-js-sdk"));
-const payments_1 = require("../../../../modules/payments");
-const formatFondyDate_1 = require("../../../../modules/payments/lib/formatFondyDate");
-const errMsg_1 = require("../../../../shared/consts/errMsg");
+const payments_1 = require("@/modules/payments");
+const formatFondyDate_1 = require("@/modules/payments/lib/formatFondyDate");
+const errMsg_1 = require("@/shared/consts/errMsg");
 class PaymentsService {
     db;
     fondy;

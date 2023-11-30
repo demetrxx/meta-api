@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HistoryContent = void 0;
-const errMsg_1 = require("../../../../shared/consts/errMsg");
+const errMsg_1 = require("@/shared/consts/errMsg");
 class HistoryContent {
     db;
     constructor(app) {

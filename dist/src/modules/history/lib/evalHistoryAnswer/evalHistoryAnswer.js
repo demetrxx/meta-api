@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.evalHistoryAnswer = void 0;
 const client_1 = require("@prisma/client");
 const http_errors_1 = __importDefault(require("http-errors"));
-const errMsg_1 = require("../../../../shared/consts/errMsg");
+const errMsg_1 = require("@/shared/consts/errMsg");
 function evalSingle({ correct, given }) {
     if (!Array.isArray(correct) || correct.length !== 1) {
         throw http_errors_1.default.InternalServerError(errMsg_1.errMsg.invalidQuestionData);

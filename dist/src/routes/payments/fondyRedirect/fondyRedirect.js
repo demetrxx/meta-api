@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fondyRedirect = void 0;
-const payments_1 = require("../../../modules/payments");
+const payments_1 = require("@/modules/payments");
 async function fondyRedirect(fastify) {
     fastify.post((0, payments_1.paymentsRedirectPath)(), async (req, res) => {
         function redirect(isSuccess = true) {

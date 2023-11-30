@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HistorySessionService = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
-const lib_1 = require("../../../../lib");
-const getHistorySessionAnalytics_1 = require("../../../../modules/history/lib/getHistorySessionAnalytics/getHistorySessionAnalytics");
-const getHistorySessionProgress_1 = require("../../../../modules/history/lib/getHistorySessionProgress/getHistorySessionProgress");
-const errMsg_1 = require("../../../../shared/consts/errMsg");
-const lib_2 = require("../../../../shared/lib");
+const lib_1 = require("@/lib");
+const getHistorySessionAnalytics_1 = require("@/modules/history/lib/getHistorySessionAnalytics/getHistorySessionAnalytics");
+const getHistorySessionProgress_1 = require("@/modules/history/lib/getHistorySessionProgress/getHistorySessionProgress");
+const errMsg_1 = require("@/shared/consts/errMsg");
+const lib_2 = require("@/shared/lib");
 class HistorySessionService {
     db;
     constructor(app) {

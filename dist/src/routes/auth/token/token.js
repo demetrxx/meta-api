@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.token = void 0;
 const typebox_1 = require("@sinclair/typebox");
 const http_errors_1 = __importDefault(require("http-errors"));
-const errMsg_1 = require("../../../shared/consts/errMsg");
+const errMsg_1 = require("@/shared/consts/errMsg");
 const body = typebox_1.Type.Strict(typebox_1.Type.Object({
     refreshToken: typebox_1.Type.String(),
 }));

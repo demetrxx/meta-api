@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.keyWordsGetByTopic = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const keyWord_1 = require("../../../modules/history/typebox/keyWord");
+const keyWord_1 = require("@/modules/history/typebox/keyWord");
 const querystring = typebox_1.Type.Object({
     topicId: typebox_1.Type.String(),
 });

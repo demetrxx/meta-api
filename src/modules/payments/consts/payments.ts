@@ -1,11 +1,11 @@
 const PAYMENTS_PATH = '/payments';
 
-export const paymentsRedirectPath = (full = false): string => {
-  const path = '/public/fondy/redirect';
-  return full ? PAYMENTS_PATH + path : path;
-};
+const getPath =
+  (path: string) =>
+  (full = false): string => {
+    return full ? PAYMENTS_PATH + path : path;
+  };
 
-export const paymentsCallbackPath = (full = false): string => {
-  const path = '/public/fondy/callback';
-  return full ? PAYMENTS_PATH + path : path;
-};
+export const paymentsRedirectPath = getPath('/public/fondy/redirect');
+export const paymentsCallbackPath = getPath('/public/fondy/callback');
+export const subsCallbackPath = getPath('/public/fondy/subs-callback');

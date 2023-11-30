@@ -1,7 +1,12 @@
 import CloudIpsp from 'cloudipsp-node-js-sdk';
 import { type FastifyInstance } from 'fastify';
 
-import { type FondyPayment, paymentsCallbackPath, paymentsRedirectPath } from '@/modules/payments';
+import {
+  type FondyPayment,
+  paymentsCallbackPath,
+  paymentsRedirectPath,
+  subsCallbackPath,
+} from '@/modules/payments';
 import { formatFondyDate } from '@/modules/payments/lib/formatFondyDate';
 import { type FondyPaymentInput } from '@/modules/payments/types/payments';
 import { errMsg } from '@/shared/consts/errMsg';
@@ -58,11 +63,12 @@ export class PaymentsService {
 
     const CALLBACK_URL = this.env.API_URL + paymentsCallbackPath(true);
     const REDIRECT_URL = this.env.API_URL + paymentsRedirectPath(true);
+    const SUBS_CALLBACK_URL = this.env.API_URL + subsCallbackPath(true);
 
     let res;
 
     // Create payment data
-    const paymentData = {
+    const paymentData: Partial<FondyPaymentInput> = {
       ...(paymentOption.fondyInput as Partial<FondyPaymentInput>),
 
       product_id: paymentOption.id,
@@ -71,13 +77,13 @@ export class PaymentsService {
 
       response_url: REDIRECT_URL,
       server_callback_url: CALLBACK_URL,
-      // subscription_callback_url: CALLBACK_URL,
     };
 
     // Subscribe
     if (paymentOption.orderType === 'SUBSCRIPTION') {
       if (!paymentData.recurring_data) throw new Error(errMsg.invalidSubsData);
       paymentData.recurring_data.start_time = formatFondyDate(new Date());
+      paymentData.subscription_callback_url = SUBS_CALLBACK_URL;
 
       res = await this.fondy.Subscription(paymentData);
     }
@@ -96,6 +102,10 @@ export class PaymentsService {
   }
 
   async receivePayment(payment: FondyPayment): Promise<void> {
+    console.log(payment);
+  }
+
+  async receiveSubscription(payment: FondyPayment): Promise<void> {
     console.log(payment);
   }
 

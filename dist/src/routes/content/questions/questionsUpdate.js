@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.questionsUpdate = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const question_1 = require("../../../modules/history/typebox/question");
-const lib_1 = require("../../../shared/lib");
+const question_1 = require("@/modules/history/typebox/question");
+const lib_1 = require("@/shared/lib");
 const params = typebox_1.Type.Object({
     id: typebox_1.Type.String(),
 });

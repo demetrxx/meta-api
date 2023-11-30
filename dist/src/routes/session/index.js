@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sessionRoutes = void 0;
-const history_1 = require("../../modules/history");
-const system_1 = require("../../shared/system");
+const history_1 = require("@/modules/history");
+const system_1 = require("@/shared/system");
 const complete_1 = require("./complete/complete");
 const deleteById_1 = require("./deleteById/deleteById");
 const find_1 = require("./find/find");

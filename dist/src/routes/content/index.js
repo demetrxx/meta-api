@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.contentRoutes = void 0;
-const history_1 = require("../../modules/history");
-const ticketsGetById_1 = require("../../routes/content/tickets/ticketsGetById");
-const system_1 = require("../../shared/system");
+const history_1 = require("@/modules/history");
+const ticketsGetById_1 = require("@/routes/content/tickets/ticketsGetById");
+const system_1 = require("@/shared/system");
 const keyWordsCreate_1 = require("./keyWords/keyWordsCreate");
 const keyWordsDelete_1 = require("./keyWords/keyWordsDelete");
 const keyWordsGetByTopic_1 = require("./keyWords/keyWordsGetByTopic");

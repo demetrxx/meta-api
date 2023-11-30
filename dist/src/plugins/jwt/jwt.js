@@ -7,8 +7,8 @@ exports.jwtPlugin = void 0;
 const jwt_1 = __importDefault(require("@fastify/jwt"));
 const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
 const http_errors_1 = __importDefault(require("http-errors"));
-const errMsg_1 = require("../../shared/consts/errMsg");
-const lib_1 = require("../../shared/lib");
+const errMsg_1 = require("@/shared/consts/errMsg");
+const lib_1 = require("@/shared/lib");
 exports.jwtPlugin = (0, fastify_plugin_1.default)(async (fastify) => {
     fastify.register(jwt_1.default, {
         secret: fastify.env.JWT_SECRET_ACCESS,
