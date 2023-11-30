@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HistoryTopicPractice = exports.HISTORY_QUESTIONS_COUNT = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
-const lib_1 = require("@/lib");
-const errMsg_1 = require("@/shared/consts/errMsg");
-const lib_2 = require("@/shared/lib");
+const lib_1 = require("../../../../lib");
+const errMsg_1 = require("../../../../shared/consts/errMsg");
+const lib_2 = require("../../../../shared/lib");
 const common_1 = require("../../consts/common");
 const lib_3 = require("../../lib");
 exports.HISTORY_QUESTIONS_COUNT = 1;

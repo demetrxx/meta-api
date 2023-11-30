@@ -1,9 +1,9 @@
 import oauthPlugin, { type OAuth2Namespace } from '@fastify/oauth2';
 import { type FastifyInstance } from 'fastify';
-import { objectToSearchParams } from 'shared/lib';
 import sget from 'simple-get';
 
 import { errMsg } from '@/shared/consts/errMsg';
+import { objectToSearchParams } from '@/shared/lib';
 
 declare module 'fastify' {
   interface FastifyInstance {

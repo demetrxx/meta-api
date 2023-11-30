@@ -7,8 +7,8 @@ exports.rolesAccessPlugin = void 0;
 const client_1 = require("@prisma/client");
 const fastify_plugin_1 = __importDefault(require("fastify-plugin"));
 const http_errors_1 = __importDefault(require("http-errors"));
-const errMsg_1 = require("@/shared/consts/errMsg");
-const lib_1 = require("@/shared/lib");
+const errMsg_1 = require("../../shared/consts/errMsg");
+const lib_1 = require("../../shared/lib");
 exports.rolesAccessPlugin = (0, fastify_plugin_1.default)(async (fastify) => {
     fastify.decorate('verifyAccess', async (request, reply) => {
         if ((0, lib_1.isPublicRoute)(request))

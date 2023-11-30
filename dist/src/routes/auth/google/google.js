@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.google = void 0;
 const oauth2_1 = __importDefault(require("@fastify/oauth2"));
-const lib_1 = require("shared/lib");
 const simple_get_1 = __importDefault(require("simple-get"));
-const errMsg_1 = require("@/shared/consts/errMsg");
+const errMsg_1 = require("../../../shared/consts/errMsg");
+const lib_1 = require("../../../shared/lib");
 const GOOGLE_INFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo';
 async function google(fastify) {
     fastify.register(oauth2_1.default, {

@@ -25,7 +25,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fondyCallback = void 0;
 const console = __importStar(require("console"));
-const payments_1 = require("@/modules/payments");
+const payments_1 = require("../../../modules/payments");
 async function fondyCallback(fastify) {
     fastify.post((0, payments_1.paymentsCallbackPath)(), async (req, res) => {
         const payment = (0, payments_1.getFondyPaymentData)(req.body);

@@ -1,8 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 
+import { formatFondyDate } from '@/modules/payments/lib/formatFondyDate';
+
 const prisma = new PrismaClient();
 
 async function main(): Promise<void> {
+  const now = new Date();
+  const startDate = formatFondyDate(now);
+  now.setFullYear(now.getFullYear() + 1);
+  const endDate = formatFondyDate(now);
+
   const a = await prisma.paymentOption.create({
     data: {
       orderType: 'SUBSCRIPTION',
@@ -14,7 +21,7 @@ async function main(): Promise<void> {
         currency: 'UAH',
         recurring_data: {
           every: 1,
-          period: 'day',
+          period: 'month',
           amount: 5200,
           start_time: startDate,
           end_time: endDate,

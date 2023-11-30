@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TBHistoryTicketOutput = exports.TBHistoryTicketUpdateInput = exports.TBHistoryTicketInput = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const question_1 = require("@/modules/history/typebox/question");
+const question_1 = require("../../../modules/history/typebox/question");
 const types = ['MAIN', 'ADDITIONAL', 'TEST', 'FIRST', 'SECOND', 'DEMO'];
 const type = typebox_1.Type.Union(types.map((i) => typebox_1.Type.Literal(i)));
 exports.TBHistoryTicketInput = typebox_1.Type.Object({

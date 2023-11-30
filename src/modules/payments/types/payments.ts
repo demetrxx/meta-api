@@ -52,9 +52,6 @@ export interface FondyPaymentInput {
   // payment meta
   server_callback_url: string;
   response_url: string;
-}
-
-export interface FondySubsInput extends FondyPaymentInput {
   recurring_data: {
     every: 1;
     period: 'day' | 'month';

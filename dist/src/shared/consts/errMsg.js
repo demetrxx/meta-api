@@ -25,6 +25,8 @@ exports.errMsg = {
     // payments
     invalidOrderId: '6.1',
     paymentCreationFailed: '6.2',
+    invalidPaymentOptionId: '6.3',
+    invalidSubsData: '6.4',
     // Internal server error
     invalidQuestionData: '500.1',
     invalidThemeProgressesCount: '500.2',

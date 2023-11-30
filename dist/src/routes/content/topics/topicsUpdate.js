@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.topicsUpdate = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const topic_1 = require("@/modules/history/typebox/topic");
+const topic_1 = require("../../../modules/history/typebox/topic");
 const params = typebox_1.Type.Object({
     id: typebox_1.Type.String(),
 });
