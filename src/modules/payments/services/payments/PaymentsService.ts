@@ -1,3 +1,4 @@
+import { type PaymentOption, type Prisma } from '@prisma/client';
 import CloudIpsp from 'cloudipsp-node-js-sdk';
 import { type FastifyInstance } from 'fastify';
 
@@ -93,7 +94,7 @@ export class PaymentsService {
       res = await this.fondy.Checkout(paymentData);
     }
 
-    if (!res || res.response_status === 'failure') {
+    if (!res || !this.isPaymentSuccess(res)) {
       console.error(res);
       throw new Error(errMsg.paymentCreationFailed);
     }
@@ -102,7 +103,29 @@ export class PaymentsService {
   }
 
   async receivePayment(payment: FondyPayment): Promise<void> {
-    console.log(payment);
+    // check if payment is unique
+    const existingPayment = await this.db.payment.findUnique({
+      where: { id: Number(payment.payment_id) },
+    });
+    if (existingPayment) throw new Error(errMsg.paymentAlreadyExists);
+
+    // create payment & connect to order
+    const { order } = await this.db.payment.create({
+      data: {
+        id: Number(payment.payment_id),
+        date: new Date(),
+        status: this.isPaymentSuccess(payment) ? 'SUCCESS' : 'FAILURE',
+        orderId: Number(payment.order_id),
+        data: payment as unknown as Prisma.JsonObject,
+      },
+      select: { order: { select: { userId: true, paymentOption: true } } },
+    });
+
+    // update user data
+    await this.db.historyProfile.update({
+      where: { userId: order.userId },
+      data: { accessUntil: this.getAccessUntil(order.paymentOption) },
+    });
   }
 
   async receiveSubscription(payment: FondyPayment): Promise<void> {
@@ -111,5 +134,17 @@ export class PaymentsService {
 
   isPaymentSuccess(payment: FondyPayment): boolean {
     return payment.response_status === 'success';
+  }
+
+  getAccessUntil(paymentOption: PaymentOption): Date {
+    const isSubscription = paymentOption.orderType === 'SUBSCRIPTION';
+    if (isSubscription) {
+      const now = new Date();
+      now.setMonth(now.getMonth() + 1);
+      return now;
+    }
+
+    if (!paymentOption.accessUntil) throw new Error(errMsg.invalidPaymentOptionFinalDate);
+    return paymentOption.accessUntil;
   }
 }

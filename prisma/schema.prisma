@@ -9,6 +9,10 @@ datasource db {
 
 // User
 
+enum Subject {
+  HISTORY
+}
+
 enum Role {
   USER
   ADMIN
@@ -58,12 +62,20 @@ enum OrderType {
 }
 
 model PaymentOption {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  accessUntil DateTime?
+
   orderType OrderType
   orders    Order[]
 
+  price    Int
+  discount Int?
+
   fondyInput Json
+
+  subjects Subject[]
 }
 
 enum OrderStatus {

@@ -3,3 +3,5 @@ psql -d meta -U demetrxx
 \dt - show tables
 \d table_name - show table structure
 \q - exit
+
+DELETE FROM "table_name" (WHERE id = 1);

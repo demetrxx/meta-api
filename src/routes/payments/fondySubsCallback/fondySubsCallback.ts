@@ -8,10 +8,10 @@ export async function fondySubsCallback(fastify: FastifyInstance): Promise<void>
     const payment = getFondyPaymentData(req.body);
 
     if (!payment) {
-      console.error('Payment callback error! No payment.');
+      console.error('Subscription callback error! No subscription.');
       return;
     }
 
-    await fastify.paymentsService.receivePayment(payment);
+    await fastify.paymentsService.receiveSubscription(payment);
   });
 }

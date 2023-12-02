@@ -43,6 +43,7 @@ class PaymentsService {
         });
         const CALLBACK_URL = this.env.API_URL + (0, payments_1.paymentsCallbackPath)(true);
         const REDIRECT_URL = this.env.API_URL + (0, payments_1.paymentsRedirectPath)(true);
+        const SUBS_CALLBACK_URL = this.env.API_URL + (0, payments_1.subsCallbackPath)(true);
         let res;
         // Create payment data
         const paymentData = {
@@ -52,30 +53,65 @@ class PaymentsService {
             sender_email: user.email,
             response_url: REDIRECT_URL,
             server_callback_url: CALLBACK_URL,
-            // subscription_callback_url: CALLBACK_URL,
         };
         // Subscribe
         if (paymentOption.orderType === 'SUBSCRIPTION') {
             if (!paymentData.recurring_data)
                 throw new Error(errMsg_1.errMsg.invalidSubsData);
             paymentData.recurring_data.start_time = (0, formatFondyDate_1.formatFondyDate)(new Date());
+            paymentData.subscription_callback_url = SUBS_CALLBACK_URL;
             res = await this.fondy.Subscription(paymentData);
         }
         // Pay once
         if (paymentOption.orderType === 'SINGLE_PAYMENT') {
             res = await this.fondy.Checkout(paymentData);
         }
-        if (!res || res.response_status === 'failure') {
+        if (!res || !this.isPaymentSuccess(res)) {
             console.error(res);
             throw new Error(errMsg_1.errMsg.paymentCreationFailed);
         }
         return { paymentUrl: res.checkout_url };
     }
     async receivePayment(payment) {
+        // check if payment is unique
+        const existingPayment = await this.db.payment.findUnique({
+            where: { id: Number(payment.payment_id) },
+        });
+        if (existingPayment)
+            throw new Error(errMsg_1.errMsg.paymentAlreadyExists);
+        // create payment & connect to order
+        const { order } = await this.db.payment.create({
+            data: {
+                id: Number(payment.payment_id),
+                date: new Date(),
+                status: this.isPaymentSuccess(payment) ? 'SUCCESS' : 'FAILURE',
+                orderId: Number(payment.order_id),
+                data: payment,
+            },
+            select: { order: { select: { userId: true, paymentOption: true } } },
+        });
+        // update user data
+        await this.db.historyProfile.update({
+            where: { userId: order.userId },
+            data: { accessUntil: this.getAccessUntil(order.paymentOption) },
+        });
+    }
+    async receiveSubscription(payment) {
         console.log(payment);
     }
     isPaymentSuccess(payment) {
         return payment.response_status === 'success';
+    }
+    getAccessUntil(paymentOption) {
+        const isSubscription = paymentOption.orderType === 'SUBSCRIPTION';
+        if (isSubscription) {
+            const now = new Date();
+            now.setMonth(now.getMonth() + 1);
+            return now;
+        }
+        if (!paymentOption.accssUntil)
+            throw new Error(errMsg_1.errMsg.invalidPaymentOptionFinalDate);
+        return paymentOption.accssUntil;
     }
 }
 exports.PaymentsService = PaymentsService;

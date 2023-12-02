@@ -14,6 +14,8 @@ async function main(): Promise<void> {
     data: {
       orderType: 'SUBSCRIPTION',
       name: '1 month subscription',
+      price: 5200,
+
       fondyInput: {
         name: '1 month subscription',
         amount: 5200,
@@ -38,6 +40,8 @@ async function main(): Promise<void> {
     data: {
       orderType: 'SINGLE_PAYMENT',
       name: 'Full year subscription',
+      price: 81200,
+      accessUntil: new Date('2023-09-01'),
       fondyInput: {
         name: 'Full year subscription',
         amount: 81200,
@@ -50,7 +54,7 @@ async function main(): Promise<void> {
   console.log(b);
 
   await prisma.order.createMany({
-    data: new Array(30).fill(0).map(() => ({
+    data: new Array(35).fill(0).map(() => ({
       type: 'SINGLE_PAYMENT',
       status: 'FAILURE',
       paymentOptionId: b.id,

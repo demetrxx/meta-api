@@ -12,6 +12,7 @@ async function main() {
         data: {
             orderType: 'SUBSCRIPTION',
             name: '1 month subscription',
+            price: 5200,
             fondyInput: {
                 name: '1 month subscription',
                 amount: 5200,

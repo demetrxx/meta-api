@@ -29,6 +29,8 @@ export const errMsg = {
   paymentCreationFailed: '6.2',
   invalidPaymentOptionId: '6.3',
   invalidSubsData: '6.4',
+  paymentAlreadyExists: '6.5',
+  invalidPaymentOptionFinalDate: '6.6',
 
   // Internal server error
   invalidQuestionData: '500.1',
