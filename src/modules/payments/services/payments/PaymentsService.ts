@@ -2,12 +2,7 @@ import { type PaymentOption, type Prisma } from '@prisma/client';
 import CloudIpsp from 'cloudipsp-node-js-sdk';
 import { type FastifyInstance } from 'fastify';
 
-import {
-  type FondyPayment,
-  paymentsCallbackPath,
-  paymentsRedirectPath,
-  subsCallbackPath,
-} from '@/modules/payments';
+import { type FondyPayment, paymentsCallbackPath, paymentsRedirectPath } from '@/modules/payments';
 import { formatFondyDate } from '@/modules/payments/lib/formatFondyDate';
 import { type FondyPaymentInput } from '@/modules/payments/types/payments';
 import { errMsg } from '@/shared/consts/errMsg';
@@ -64,7 +59,6 @@ export class PaymentsService {
 
     const CALLBACK_URL = this.env.API_URL + paymentsCallbackPath(true);
     const REDIRECT_URL = this.env.API_URL + paymentsRedirectPath(true);
-    const SUBS_CALLBACK_URL = this.env.API_URL + subsCallbackPath(true);
 
     let res;
 
@@ -84,7 +78,7 @@ export class PaymentsService {
     if (paymentOption.orderType === 'SUBSCRIPTION') {
       if (!paymentData.recurring_data) throw new Error(errMsg.invalidSubsData);
       paymentData.recurring_data.start_time = formatFondyDate(new Date());
-      paymentData.subscription_callback_url = SUBS_CALLBACK_URL;
+      paymentData.subscription_callback_url = REDIRECT_URL;
 
       res = await this.fondy.Subscription(paymentData);
     }
@@ -126,10 +120,6 @@ export class PaymentsService {
       where: { userId: order.userId },
       data: { accessUntil: this.getAccessUntil(order.paymentOption) },
     });
-  }
-
-  async receiveSubscription(payment: FondyPayment): Promise<void> {
-    console.log(payment);
   }
 
   isPaymentSuccess(payment: FondyPayment): boolean {

@@ -35,6 +35,8 @@ async function main() {
         data: {
             orderType: 'SINGLE_PAYMENT',
             name: 'Full year subscription',
+            price: 81200,
+            accessUntil: new Date('2023-09-01'),
             fondyInput: {
                 name: 'Full year subscription',
                 amount: 81200,
@@ -45,7 +47,7 @@ async function main() {
     });
     console.log(b);
     await prisma.order.createMany({
-        data: new Array(30).fill(0).map(() => ({
+        data: new Array(35).fill(0).map(() => ({
             type: 'SINGLE_PAYMENT',
             status: 'FAILURE',
             paymentOptionId: b.id,

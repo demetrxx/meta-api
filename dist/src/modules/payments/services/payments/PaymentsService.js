@@ -109,9 +109,9 @@ class PaymentsService {
             now.setMonth(now.getMonth() + 1);
             return now;
         }
-        if (!paymentOption.accssUntil)
+        if (!paymentOption.accessUntil)
             throw new Error(errMsg_1.errMsg.invalidPaymentOptionFinalDate);
-        return paymentOption.accssUntil;
+        return paymentOption.accessUntil;
     }
 }
 exports.PaymentsService = PaymentsService;
