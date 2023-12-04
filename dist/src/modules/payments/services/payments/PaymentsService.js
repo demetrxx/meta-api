@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentsService = void 0;
 const cloudipsp_node_js_sdk_1 = __importDefault(require("cloudipsp-node-js-sdk"));
-const payments_1 = require("@/modules/payments");
-const formatFondyDate_1 = require("@/modules/payments/lib/formatFondyDate");
-const errMsg_1 = require("@/shared/consts/errMsg");
+const payments_1 = require("../../../../modules/payments");
+const formatFondyDate_1 = require("../../../../modules/payments/lib/formatFondyDate");
+const errMsg_1 = require("../../../../shared/consts/errMsg");
 class PaymentsService {
     db;
     fondy;
@@ -43,7 +43,6 @@ class PaymentsService {
         });
         const CALLBACK_URL = this.env.API_URL + (0, payments_1.paymentsCallbackPath)(true);
         const REDIRECT_URL = this.env.API_URL + (0, payments_1.paymentsRedirectPath)(true);
-        const SUBS_CALLBACK_URL = this.env.API_URL + (0, payments_1.subsCallbackPath)(true);
         let res;
         // Create payment data
         const paymentData = {
@@ -59,14 +58,14 @@ class PaymentsService {
             if (!paymentData.recurring_data)
                 throw new Error(errMsg_1.errMsg.invalidSubsData);
             paymentData.recurring_data.start_time = (0, formatFondyDate_1.formatFondyDate)(new Date());
-            paymentData.subscription_callback_url = SUBS_CALLBACK_URL;
+            paymentData.subscription_callback_url = REDIRECT_URL;
             res = await this.fondy.Subscription(paymentData);
         }
         // Pay once
         if (paymentOption.orderType === 'SINGLE_PAYMENT') {
             res = await this.fondy.Checkout(paymentData);
         }
-        if (!res || !this.isPaymentSuccess(res)) {
+        if (!res?.checkout_url) {
             console.error(res);
             throw new Error(errMsg_1.errMsg.paymentCreationFailed);
         }
@@ -95,9 +94,6 @@ class PaymentsService {
             where: { userId: order.userId },
             data: { accessUntil: this.getAccessUntil(order.paymentOption) },
         });
-    }
-    async receiveSubscription(payment) {
-        console.log(payment);
     }
     isPaymentSuccess(payment) {
         return payment.response_status === 'success';

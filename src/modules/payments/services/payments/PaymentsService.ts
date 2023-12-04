@@ -6,6 +6,7 @@ import { type FondyPayment, paymentsCallbackPath, paymentsRedirectPath } from '@
 import { formatFondyDate } from '@/modules/payments/lib/formatFondyDate';
 import { type FondyPaymentInput } from '@/modules/payments/types/payments';
 import { errMsg } from '@/shared/consts/errMsg';
+import { type IdObject } from '@/shared/types/IdObject';
 
 import { type IEnvSchema } from '../../../../../config';
 
@@ -85,10 +86,11 @@ export class PaymentsService {
 
     // Pay once
     if (paymentOption.orderType === 'SINGLE_PAYMENT') {
+      console.log(paymentData);
       res = await this.fondy.Checkout(paymentData);
     }
 
-    if (!res || !this.isPaymentSuccess(res)) {
+    if (!res?.checkout_url) {
       console.error(res);
       throw new Error(errMsg.paymentCreationFailed);
     }
@@ -136,5 +138,34 @@ export class PaymentsService {
 
     if (!paymentOption.accessUntil) throw new Error(errMsg.invalidPaymentOptionFinalDate);
     return paymentOption.accessUntil;
+  }
+
+  async createPaymentOption(data: Prisma.PaymentOptionCreateInput): Promise<IdObject> {
+    return await this.db.paymentOption.create({ data, select: { id: true } });
+  }
+
+  async updatePaymentOption(
+    paymentOptionId: number,
+    data: Prisma.PaymentOptionUpdateInput,
+  ): Promise<IdObject> {
+    return await this.db.paymentOption.update({
+      where: { id: paymentOptionId },
+      data,
+      select: { id: true },
+    });
+  }
+
+  async deletePaymentOption(id: number): Promise<void> {
+    await this.db.paymentOption.delete({ where: { id } });
+  }
+
+  async getPaymentOptions(opts?: { active: boolean }): Promise<PaymentOption[]> {
+    if (opts?.active) {
+      return await this.db.paymentOption.findMany({
+        where: { active: true },
+      });
+    }
+
+    return await this.db.paymentOption.findMany();
   }
 }

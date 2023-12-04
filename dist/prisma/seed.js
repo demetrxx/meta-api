@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
-const formatFondyDate_1 = require("@/modules/payments/lib/formatFondyDate");
+const formatFondyDate_1 = require("../src/modules/payments/lib/formatFondyDate");
 const prisma = new client_1.PrismaClient();
-async function main() {
+async function setPaymentsData() {
     const now = new Date();
     const startDate = (0, formatFondyDate_1.formatFondyDate)(now);
     now.setFullYear(now.getFullYear() + 1);
@@ -36,7 +36,7 @@ async function main() {
             orderType: 'SINGLE_PAYMENT',
             name: 'Full year subscription',
             price: 81200,
-            accessUntil: new Date('2023-09-01'),
+            accessUntil: new Date('2024-09-01'),
             fondyInput: {
                 name: 'Full year subscription',
                 amount: 81200,
@@ -53,6 +53,12 @@ async function main() {
             paymentOptionId: b.id,
             userId: 1,
         })),
+    });
+}
+async function main() {
+    await prisma.paymentOption.update({
+        where: { id: 4 },
+        data: { accessUntil: new Date('2024-09-01') },
     });
 }
 main()

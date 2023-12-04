@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.questionsGetMany = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const question_1 = require("@/modules/history/typebox/question");
+const question_1 = require("../../../modules/history/typebox/question");
 const querystring = typebox_1.Type.Object({
     topicId: typebox_1.Type.Optional(typebox_1.Type.String()),
     ticketId: typebox_1.Type.Optional(typebox_1.Type.String()),

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.keyWordsUpdate = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const keyWord_1 = require("@/modules/history/typebox/keyWord");
+const keyWord_1 = require("../../../modules/history/typebox/keyWord");
 const params = typebox_1.Type.Object({
     id: typebox_1.Type.String(),
 });

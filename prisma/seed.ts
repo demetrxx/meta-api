@@ -4,7 +4,7 @@ import { formatFondyDate } from '@/modules/payments/lib/formatFondyDate';
 
 const prisma = new PrismaClient();
 
-async function main(): Promise<void> {
+async function setPaymentsData(): Promise<void> {
   const now = new Date();
   const startDate = formatFondyDate(now);
   now.setFullYear(now.getFullYear() + 1);
@@ -41,7 +41,7 @@ async function main(): Promise<void> {
       orderType: 'SINGLE_PAYMENT',
       name: 'Full year subscription',
       price: 81200,
-      accessUntil: new Date('2023-09-01'),
+      accessUntil: new Date('2024-09-01'),
       fondyInput: {
         name: 'Full year subscription',
         amount: 81200,
@@ -60,6 +60,13 @@ async function main(): Promise<void> {
       paymentOptionId: b.id,
       userId: 1,
     })),
+  });
+}
+
+async function main(): Promise<void> {
+  await prisma.paymentOption.update({
+    where: { id: 4 },
+    data: { accessUntil: new Date('2024-09-01') },
   });
 }
 

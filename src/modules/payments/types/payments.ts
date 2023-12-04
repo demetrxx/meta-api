@@ -40,7 +40,7 @@ export interface FondySubscription {
 
 export interface FondyPaymentInput {
   name: string;
-  amount: number;
+  amount: number | string;
   order_desc: string;
   currency: 'UAH';
   // common

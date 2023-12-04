@@ -10,7 +10,7 @@
     "start": "nodemon -r tsconfig-paths/register server.ts",
     "start:prod": "NODE_ENV=production node -r tsconfig-paths/register ./dist/server.js",
     "prisma:migrate": "prisma migrate dev",
-    "seed": "npm run build && node -r tsconfig-paths/register ./dist/prisma/seed.js",
+    "prisma:seed": "npm run build && node -r tsconfig-paths/register ./dist/prisma/seed.js",
     "lint": "eslint \"**/*.ts\" --fix",
     "prettier": "npx prettier \"**/*.ts\" --write",
     "test": "echo \"Error: no test specified\" && exit 1"

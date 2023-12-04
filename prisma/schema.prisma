@@ -66,12 +66,13 @@ model PaymentOption {
   name String @unique
 
   accessUntil DateTime?
+  orderType   OrderType
 
-  orderType OrderType
-  orders    Order[]
+  orders Order[]
 
   price    Int
-  discount Int?
+  discount Int
+  active   Boolean? @default(true)
 
   fondyInput Json
 
@@ -95,8 +96,8 @@ model Order {
   type   OrderType
   status OrderStatus
 
-  paymentOptionId Int
-  paymentOption   PaymentOption @relation(fields: [paymentOptionId], references: [id])
+  paymentOptionId     Int
+  paymentOptionCreate PaymentOption @relation(fields: [paymentOptionId], references: [id])
 
   userId Int
   user   User @relation(fields: [userId], references: [id])

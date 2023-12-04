@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.topicsCreate = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const topic_1 = require("@/modules/history/typebox/topic");
+const topic_1 = require("../../../modules/history/typebox/topic");
 const body = topic_1.TBHistoryTopicInput;
 const response = { '2xx': typebox_1.Type.Object({ id: typebox_1.Type.Number() }) };
 const schema = { body, response };

@@ -5,3 +5,4 @@ psql -d meta -U demetrxx
 \q - exit
 
 DELETE FROM "table_name" (WHERE id = 1);
+DELETE FROM "Payment" (WHERE id = 1);

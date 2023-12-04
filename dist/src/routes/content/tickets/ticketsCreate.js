@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ticketsCreate = void 0;
 const typebox_1 = require("@sinclair/typebox");
-const ticket_1 = require("@/modules/history/typebox/ticket");
-const lib_1 = require("@/shared/lib");
+const ticket_1 = require("../../../modules/history/typebox/ticket");
+const lib_1 = require("../../../shared/lib");
 const body = ticket_1.TBHistoryTicketInput;
 const response = { '2xx': typebox_1.Type.Object({ id: typebox_1.Type.Number() }) };
 const schema = { body, response };
