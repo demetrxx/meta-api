@@ -71,7 +71,7 @@ model PaymentOption {
   orders Order[]
 
   price    Int
-  discount Int
+  discount Int?
   active   Boolean? @default(true)
 
   fondyInput Json
@@ -97,7 +97,7 @@ model Order {
   status OrderStatus
 
   paymentOptionId     Int
-  paymentOptionCreate PaymentOption @relation(fields: [paymentOptionId], references: [id])
+  paymentOption PaymentOption @relation(fields: [paymentOptionId], references: [id])
 
   userId Int
   user   User @relation(fields: [userId], references: [id])

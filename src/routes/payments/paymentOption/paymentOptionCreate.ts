@@ -1,10 +1,9 @@
-import { type Prisma } from '@prisma/client';
 import { type Static, Type } from '@sinclair/typebox';
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
 
-import { TBHistoryQuestionInput } from '@/modules/history/typebox/question';
+import { TBPPaymentOptionInput } from '@/modules/payments';
 
-const body = TBHistoryQuestionInput;
+const body = TBPPaymentOptionInput;
 
 const response = { '2xx': Type.Object({ id: Type.Number() }) };
 
@@ -15,10 +14,9 @@ interface T extends RouteGenericInterface {
 }
 
 export async function paymentOptionCreate(fastify: FastifyInstance): Promise<void> {
-  fastify.post<T>('/questions', { schema }, async (req, res) => {
-    const createData: Prisma.PaymentOptionCreateInput = {};
-
-    const result = await fastify.paymentsService.createPaymentOption(createData);
+  fastify.addHook('onRequest', fastify.verifyOwner);
+  fastify.post<T>('/options', { schema }, async (req, res) => {
+    const result = await fastify.paymentsService.createPaymentOption(req.body);
 
     res.status(201);
 

@@ -1,14 +1,13 @@
 import { type Static, Type } from '@sinclair/typebox';
 import { type FastifyInstance, type FastifySchema, type RouteGenericInterface } from 'fastify';
 
-import { TBHistoryQuestionInput } from '@/modules/history/typebox/question';
-import { toIdsObjArr } from '@/shared/lib';
+import { TBPPaymentOptionInput } from '@/modules/payments';
 
 const params = Type.Object({
   id: Type.String(),
 });
 
-const body = Type.Partial(TBHistoryQuestionInput);
+const body = Type.Partial(TBPPaymentOptionInput);
 
 const schema: FastifySchema = {
   body,
@@ -22,13 +21,8 @@ interface T extends RouteGenericInterface {
 }
 
 export async function paymentOptionUpdate(fastify: FastifyInstance): Promise<void> {
-  fastify.patch<T>('/questions/:id', { schema }, async (req, res) => {
-    const updateData = {
-      ...req.body,
-      topics: req.body.topics ? { connect: toIdsObjArr(req.body.topics) } : undefined,
-      keyWords: { set: req.body.keyWords },
-    };
-
-    return await fastify.historyContent.updateQuestion(Number(req.params.id), updateData);
+  fastify.addHook('onRequest', fastify.verifyOwner);
+  fastify.patch<T>('/options/:id', { schema }, async (req, res) => {
+    return await fastify.paymentsService.updatePaymentOption(Number(req.params.id), req.body);
   });
 }

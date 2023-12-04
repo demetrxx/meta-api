@@ -6,3 +6,11 @@ psql -d meta -U demetrxx
 
 DELETE FROM "table_name" (WHERE id = 1);
 DELETE FROM "Payment" (WHERE id = 1);
+
+
+// Install postgresql on macosx
+sudo psql -U my_macosx_username postgres
+CREATE DATABASE meta;
+GRANT ALL PRIVILEGES ON DATABASE meta TO yourusername;
+\q
+psql -h localhost -U demetrxx -d meta
